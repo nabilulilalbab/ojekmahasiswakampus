@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OMK - Ojek Mahasiswa Kampus</title>
+  <!-- Tailwind CSS -->
+  <link href="{%  static 'src/output.css' %}" rel="stylesheet">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <!-- AOS CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+  <!-- Alpine.js -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.8.1/dist/cdn.min.js" defer></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <!-- Header -->
+  <header x-data="{ open: false }" class="bg-white shadow animate__animated animate__fadeInDown">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="{% url 'omk:home' %}" class="flex items-center space-x-3">
+  <!-- Logo SVG yang diperbesar -->
+  <img
+    src="{% static 'images/logo.svg' %}"
+    alt="OMK Logo"
+    class="h-12 w-auto transition-transform hover:scale-105 flex-shrink-0"
+  >
+  <span class="text-2xl font-bold text-indigo-600 hidden md:block">
+    OM<span class="text-indigo-400">K</span>
+  </span>
+</a>
+      <nav class="hidden md:flex space-x-6 items-center">
+        <a href="{% url 'omk:home' %}" class="text-gray-700 hover:text-indigo-600 transition">Beranda</a>
+        <a href="{% url 'omk:order_create' %}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500 transition">Pesan Sekarang</a>
+      </nav>
+      <!-- Mobile Menu Button -->
+      <button @click="open = !open" class="md:hidden text-gray-700 focus:outline-none">
+        <i class="fas fa-bars text-2xl"></i>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <div x-show="open" class="md:hidden bg-white" x-cloak>
+      <nav class="px-4 pt-2 pb-4 space-y-2">
+        <a href="{% url 'omk:home' %}" class="block text-gray-700 hover:text-indigo-600 transition">Beranda</a>
+        <a href="{% url 'omk:order_create' %}" class="block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500 transition text-center">Pesan Sekarang</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="min-h-screen">
+    {% block content %}{% endblock %}
+  </main>
+
+<!-- Footer -->
+<footer class="bg-indigo-700 text-white py-8">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Bagian Tentang OMK -->
+      <div class="lg:max-w-xs">
+        <h4 class="text-xl font-bold mb-4">OMK</h4>
+        <p class="text-indigo-200 leading-relaxed">
+          Platform ojek mahasiswa dengan harga terjangkau dan privasi terjamin.
+          Layanan operasional 24 jam untuk mendukung mobilitas kampus Anda.
+        </p>
+      </div>
+
+      <!-- Bagian Kontak -->
+      <div class="lg:max-w-xs">
+        <h4 class="text-xl font-bold mb-4">Kontak</h4>
+        <div class="space-y-3">
+          <p class="flex items-start text-indigo-200">
+            <i class="fas fa-envelope mr-2 mt-1 flex-shrink-0"></i>
+            <span class="break-words whitespace-normal">
+              ojekmahasiswakampus@gmail.com
+            </span>
+          </p>
+          <p class="flex items-center text-indigo-200">
+            <i class="fas fa-phone mr-2 flex-shrink-0"></i>
+            +62 8820-0880-9231
+          </p>
+        </div>
+      </div>
+
+      <!-- Bagian Media Sosial -->
+      <div class="md:col-span-2 lg:col-span-1">
+        <h4 class="text-xl font-bold mb-4">Ikuti Kami</h4>
+        <div class="flex flex-wrap gap-4">
+          <a href="https://www.instagram.com/ojekmahasiswakampus/"
+             class="text-indigo-200 hover:text-white transition-transform hover:scale-110">
+            <i class="fab fa-instagram text-2xl"></i>
+            <span class="sr-only">Instagram</span>
+          </a>
+          <a href="#"
+             class="text-indigo-200 hover:text-white transition-transform hover:scale-110">
+            <i class="fab fa-twitter text-2xl"></i>
+            <span class="sr-only">Twitter</span>
+          </a>
+          <a href="https://www.tiktok.com/@ojek.mahasiswa.ka"
+             class="text-indigo-200 hover:text-white transition-transform hover:scale-110">
+            <i class="fab fa-tiktok text-2xl"></i>
+            <span class="sr-only">TikTok</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="mt-8 pt-8 border-t border-indigo-600 text-center text-indigo-300">
+      <p class="text-sm md:text-base">
+        &copy; {% now "Y" %} OMK. Hak Cipta Dilindungi.<br class="md:hidden">
+        <span class="hidden md:inline">•</span>
+        <span class="block md:inline mt-1 md:mt-0">
+          Layanan berlisensi di bawah Kementerian Perhubungan RI
+        </span>
+      </p>
+    </div>
+  </div>
+</footer>
+
+  <!-- AOS JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

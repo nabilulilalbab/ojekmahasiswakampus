@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="py-16 bg-gradient-to-r from-blue-500 to-blue-600 text-white" data-aos="fade-down">
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-3xl md:text-4xl font-bold animate__animated animate__fadeInDown">Pesan Perjalananmu Sekarang</h1>
+    <p class="mt-4 text-lg animate__animated animate__fadeInDown animate__delay-1s">
+      Isi formulir di bawah untuk memesan perjalanan dengan driver mahasiswa
+    </p>
+  </div>
+</section>
+
+<!-- Order Form Section -->
+<section class="py-16" data-aos="fade-up">
+  <div class="container mx-auto px-4">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8 animate__animated animate__fadeInUp">
+      <h2 class="text-2xl font-bold mb-6 text-gray-800">Detail Perjalanan</h2>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="mb-6 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} animate__animated animate__fadeIn">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" id="orderForm">
+        {% csrf_token %}
+
+        <!-- Customer & Phone -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="{{ form.customer_name.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+              {{ form.customer_name.label }}
+            </label>
+            {{ form.customer_name }}
+            {% if form.customer_name.errors %}
+              <p class="text-red-500 text-sm mt-1">{{ form.customer_name.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.phone_number.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+              {{ form.phone_number.label }}
+            </label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}
+              <p class="text-red-500 text-sm mt-1">{{ form.phone_number.errors.0 }}</p>
+            {% endif %}
+            <p class="text-gray-500 text-sm mt-1">Privasi nomor WhatsApp Anda terjamin</p>
+          </div>
+        </div>
+
+        <!-- Lokasi Penjemputan & Tujuan -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="{{ form.firstLocation.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+              {{ form.firstLocation.label }}
+            </label>
+            {{ form.firstLocation }}
+            {% if form.firstLocation.errors %}
+              <p class="text-red-500 text-sm mt-1">{{ form.firstLocation.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.lastLocation.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+              {{ form.lastLocation.label }}
+            </label>
+            {{ form.lastLocation }}
+            {% if form.lastLocation.errors %}
+              <p class="text-red-500 text-sm mt-1">{{ form.lastLocation.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Pesan Tambahan -->
+        <div class="mb-6">
+          <label for="{{ form.messages.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+            {{ form.messages.label }}
+          </label>
+          {{ form.messages }}
+          {% if form.messages.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ form.messages.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Voucher Section -->
+        <div class="mb-6 p-4 bg-blue-50 rounded-lg" data-aos="fade-right">
+          <div class="flex flex-col md:flex-row md:items-end gap-4">
+            <div class="flex-grow">
+              <label for="{{ voucher_form.voucher_code.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+                Kode Voucher (Opsional)
+              </label>
+              {{ voucher_form.voucher_code }}
+            </div>
+            <button type="button" id="checkVoucher" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition transform hover:scale-105">
+              Cek Voucher
+            </button>
+          </div>
+          <div id="voucherResult" class="mt-2 hidden"></div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-center">
+          <button type="submit" class="btn-primary w-full md:w-auto transform transition hover:scale-105">
+            Pesan Sekarang
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const checkVoucherBtn = document.getElementById('checkVoucher');
+  // Menggunakan auto_id untuk memastikan mendapatkan id input voucher yang benar
+  const voucherCodeInput = document.getElementById('{{ voucher_form.voucher_code.auto_id }}');
+  const voucherResult = document.getElementById('voucherResult');
+
+  checkVoucherBtn.addEventListener('click', function() {
+    const voucherCode = voucherCodeInput.value.trim();
+
+    if (!voucherCode) {
+      showVoucherResult('Masukkan kode voucher terlebih dahulu', false);
+      return;
+    }
+
+    // Request AJAX untuk cek voucher
+    fetch('{% url "omk:check_voucher" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: 'voucher_code=' + encodeURIComponent(voucherCode)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.valid) {
+        let discountText = data.discount_type === 'percent'
+          ? `${data.discount}% diskon`
+          : `Rp ${data.discount} diskon`;
+        showVoucherResult(`${data.message} ${discountText}`, true);
+      } else {
+        showVoucherResult(data.message, false);
+      }
+    })
+    .catch(error => {
+      showVoucherResult('Terjadi kesalahan saat memeriksa voucher', false);
+    });
+  });
+
+  function showVoucherResult(message, isValid) {
+    voucherResult.innerHTML = message;
+    voucherResult.classList.remove('hidden', 'text-green-600', 'text-red-600', 'animate__animated', 'animate__fadeIn');
+    voucherResult.classList.add(isValid ? 'text-green-600' : 'text-red-600', 'animate__animated', 'animate__fadeIn');
+  }
+});
+</script>
+{% endblock %}
