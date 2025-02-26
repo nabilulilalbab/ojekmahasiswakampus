@@ -25,11 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["ojekmahasiswakampus.biz.id","*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1" , "ojekmahasiswakampus.biz.id","*"]
 
 CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1',
     'http://localhost',
     'https://ojekmahasiswakampus.biz.id',
 ]
