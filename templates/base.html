@@ -4,19 +4,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tambahkan meta description dan keywords -->
+  <meta name="description" content="OMK - Layanan Ojek Mahasiswa Kampus Terpercaya. Pesan sekarang untuk mobilitas kampus yang aman, nyaman, dan terjangkau. Tersedia 24 jam!">
+  <meta name="keywords" content="ojek kampus, transportasi mahasiswa, ojek murah, antar jemput kampus">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:title" content="OMK - Ojek Mahasiswa Kampus">
+  <meta property="og:description" content="Layanan Ojek Mahasiswa Kampus Terpercaya. Pesan sekarang untuk mobilitas kampus yang aman dan nyaman!">
+  <meta property="og:image" content="{% static 'images/logo.svg' %}">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+
   <title>OMK - Ojek Mahasiswa Kampus</title>
+  <!-- Preload resources penting -->
+  <link rel="preload" href="{% static 'src/output.css' %}" as="style">
+  <link rel="preload" href="{% static 'images/logo.svg' %}" as="image">
+  <!-- Preconnect ke CDN -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <!-- Tailwind CSS -->
-  <link href="{%  static 'src/output.css' %}" rel="stylesheet">
+  <link href="{% static 'src/output.css' %}" rel="stylesheet">
   <!-- Animate.css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <!-- AOS CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
   <!-- Alpine.js -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.8.1/dist/cdn.min.js" defer></script>
   <!-- Google Fonts -->
+  <!-- Google Fonts dengan display swap -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- AOS CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -25,7 +46,7 @@
 </head>
 <body class="bg-gray-100">
   <!-- Header -->
-  <header x-data="{ open: false }" class="bg-white shadow animate__animated animate__fadeInDown">
+  <header x-data="{ open: false }" class="bg-white shadow animate__animated animate__fadeInDown" aria-label="Header utama">
     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
       <a href="{% url 'omk:home' %}" class="flex items-center space-x-3">
   <!-- Logo SVG yang diperbesar -->
@@ -38,12 +59,12 @@
     OM<span class="text-indigo-400">K</span>
   </span>
 </a>
-      <nav class="hidden md:flex space-x-6 items-center">
-        <a href="{% url 'omk:home' %}" class="text-gray-700 hover:text-indigo-600 transition">Beranda</a>
+      <nav class="hidden md:flex space-x-6 items-center" aria-label="Navigasi utama">
+        <a href="{% url 'omk:home' %}" class="text-gray-700 hover:text-indigo-600 transition" aria-current="page">Beranda</a>
         <a href="{% url 'omk:order_create' %}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500 transition">Pesan Sekarang</a>
       </nav>
       <!-- Mobile Menu Button -->
-      <button @click="open = !open" class="md:hidden text-gray-700 focus:outline-none">
+      <button @click="open = !open" class="md:hidden text-gray-700 focus:outline-none" :aria-expanded="open" aria-label="Toggle navigasi mobile">
         <i class="fas fa-bars text-2xl"></i>
       </button>
     </div>
@@ -62,45 +83,55 @@
   </main>
 
 <!-- Footer -->
-<footer class="bg-indigo-700 text-white py-8">
+<footer class="bg-indigo-700 text-white py-8" role="contentinfo" itemscope itemtype="https://schema.org/LocalBusiness">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <!-- Bagian Tentang OMK -->
-      <div class="lg:max-w-xs">
-        <h4 class="text-xl font-bold mb-4">OMK</h4>
-        <p class="text-indigo-200 leading-relaxed">
-          Platform ojek mahasiswa dengan harga terjangkau dan privasi terjamin.
-          Layanan operasional 24 jam untuk mendukung mobilitas kampus Anda.
+      <div class="lg:max-w-xs" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+        <h4 class="text-xl font-bold mb-4" itemprop="name">OMK</h4>
+        <p class="text-indigo-200 leading-relaxed" itemprop="description">
+          Platform ojek mahasiswa dengan harga terjangkau dan privasi terjamin. Layanan operasional 24 jam untuk mendukung mobilitas kampus Anda.
         </p>
+        <meta itemprop="streetAddress" content="Jl. Sidodadi Timur No. 24 (Depan Kampus PGRI)">
+        <meta itemprop="addressLocality" content="Semarang">
+        <meta itemprop="addressRegion" content="Jawa Tengah">
+        <meta itemprop="postalCode" content="50232">
+        <meta itemprop="addressCountry" content="Indonesia">
+        <meta itemprop="openingHours" content="Mo-Su 00:00-23:59">
+        <meta itemprop="priceRange" content="Rp 5.000 - Rp 25.000">
       </div>
 
       <!-- Bagian Kontak -->
       <div class="lg:max-w-xs">
         <h4 class="text-xl font-bold mb-4">Kontak</h4>
-        <div class="space-y-3">
-          <p class="flex items-start text-indigo-200">
+        <div class="space-y-3" itemprop="contactPoint" itemscope itemtype="https://schema.org/ContactPoint">
+          <p class="flex items-start text-indigo-200" itemprop="email">
             <i class="fas fa-envelope mr-2 mt-1 flex-shrink-0"></i>
             <span class="break-words whitespace-normal">
               ojekmahasiswakampus@gmail.com
             </span>
           </p>
-          <p class="flex items-center text-indigo-200">
+          <p class="flex items-center text-indigo-200" itemprop="telephone">
             <i class="fas fa-phone mr-2 flex-shrink-0"></i>
             +62 8820-0880-9231
           </p>
+          <div itemprop="areaServed" itemscope itemtype="https://schema.org/AdministrativeArea">
+            <meta itemprop="name" content="Semarang">
+            <meta itemprop="description" content="Wilayah layanan: Kampus PGRI, Sekaran, Gunung Pati, dan sekitarnya">
+          </div>
         </div>
       </div>
 
       <!-- Bagian Media Sosial -->
       <div class="md:col-span-2 lg:col-span-1">
         <h4 class="text-xl font-bold mb-4">Ikuti Kami</h4>
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-4" itemprop="sameAs">
           <a href="https://www.instagram.com/ojekmahasiswakampus/"
              class="text-indigo-200 hover:text-white transition-transform hover:scale-110">
             <i class="fab fa-instagram text-2xl"></i>
             <span class="sr-only">Instagram</span>
           </a>
-          <a href="#"
+          <a href="https://twitter.com/omk_semarang"
              class="text-indigo-200 hover:text-white transition-transform hover:scale-110">
             <i class="fab fa-twitter text-2xl"></i>
             <span class="sr-only">Twitter</span>
@@ -111,6 +142,8 @@
             <span class="sr-only">TikTok</span>
           </a>
         </div>
+        <meta itemprop="image" content="{% static 'images/logo.svg' %}">
+        <meta itemprop="url" content="https://ojekmahasiswakampus.biz.id">
       </div>
     </div>
 
@@ -123,6 +156,9 @@
           Layanan berlisensi di bawah Kementerian Perhubungan RI
         </span>
       </p>
+      <div itemprop="founder" itemscope itemtype="https://schema.org/Person">
+        <meta itemprop="name" content="Tim Mahasiswa PGRI Semarang">
+      </div>
     </div>
   </div>
 </footer>

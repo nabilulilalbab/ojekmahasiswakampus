@@ -27,9 +27,11 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1" , "ojekmahasiswakampus.biz.id","*"]
+ALLOWED_HOSTS = ["ojekmahasiswakampus.biz.id","ojekmahasiswakampus.sgp.dom.my.id","localhost", "127.0.0.1" , "ojekmahasiswakampus.biz.id","*"]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://ojekmahasiswakampus.biz.id",
+    'https://ojekmahasiswakampus.sgp.dom.my.id',
     'http://127.0.0.1',
     'http://localhost',
     'https://ojekmahasiswakampus.biz.id',
@@ -126,6 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # <-- Tambahkan ini
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
