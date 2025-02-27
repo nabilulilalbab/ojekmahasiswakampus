@@ -1,5 +1,3 @@
-Berikut adalah contoh README yang komprehensif untuk project "ojekmahasiswakampus" berdasarkan struktur project dan fitur-fitur yang telah disebutkan:
-
 ---
 
 # Ojek Mahasiswa Kampus
