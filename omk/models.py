@@ -109,25 +109,41 @@ class Order(models.Model):
 
     def get_whatsapp_link(self):
         wa_number = "62882008809231"  # Ganti dengan nomor admin Anda
+        formatted_price = f"{self.price:,.0f}".replace(",", ".")
+        formatted_distance = f"{float(self.distance):.2f}".replace(".", ",")
 
-        # Buat pesan voucher jika ada
+        # Format pesan voucher
         voucher_text = ""
         if self.voucher:
-            voucher_text = f"Voucher: {self.voucher.code}, Diskon: {self.discount_applied}"
+            formatted_discount = f"{self.discount_applied:,.0f}".replace(",", ".")
+            original_price = self.price + self.discount_applied
+            formatted_original = f"{original_price:,.0f}".replace(",", ".")
+        
+            voucher_text = (
+                f"✉️ *Voucher Terpakai:*\n"
+                f"- Kode: {self.voucher.code}\n"
+                f"- Diskon: Rp {formatted_discount}\n"
+                f"💵 *Harga Awal:* Rp {formatted_original}\n"
+                f"🎁 *Diskon:* Rp {formatted_discount}\n"
+            )
 
         # Susun pesan utama
         message = (
-            f"Halo, saya {self.customer_name}.\n"
-            f"Saya ingin order dari *{self.firstLocation}* ke *{self.lastLocation}*.\n"
-            f"Pesan tambahan: {self.messages if self.messages else '-'}\n"
-            f"Status: {self.status}\n"
-            f"{voucher_text}\n"
-            f"Jarak: {self.distance}"
+            f"🚖 *PESANAN BARU* 🚖\n\n"
+            f"👤 *Nama:* {self.customer_name}\n"
+            f"📱 *Nomor HP:* {self.phone_number}\n\n"
+            f"📍 *Lokasi Penjemputan:*\n{self.firstLocation}\n\n"
+            f"🎯 *Lokasi Tujuan:*\n{self.lastLocation}\n\n"
+            f"📏 *Jarak Tempuh:* {formatted_distance} km\n"
+            f"💸 *Harga Akhir:* Rp {formatted_price}\n\n"
+            f"{voucher_text if self.voucher else ''}"
+            f"📝 *Catatan Tambahan:*\n{self.messages if self.messages else '-'}\n\n"
+            f"🔄 *Status Pesanan:* {self.status.upper()}"
         )
 
         params = {"phone": wa_number, "text": message}
         return f"https://api.whatsapp.com/send?{urlencode(params)}"
-
+    
     def apply_voucher(self):
         if self.voucher and self.voucher.is_valid():
             # Hitung ulang harga setelah diskon
