@@ -76,6 +76,15 @@
                             </p>
                         </div>
                         {% endif %}
+                        {% if order %}
+                        <h3 class="text-xl font-bold mb-2">Rincian Pembayaran:</h3>
+                        <ul class="space-y-2">
+                            <li>Jarak Tempuh: {{ order.distance }} km</li>
+                            <li>Harga Awal: Rp {{ order.price|add:order.discount_applied|floatformat:0 }}</li>
+                            <li>Diskon: Rp {{ order.discount_applied|floatformat:0 }}</li>
+                            <li class="font-bold">Total: Rp {{ order.price|floatformat:0 }}</li>
+                        </ul>
+                        {% endif %}
                     </div>
                 </div>
 

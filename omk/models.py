@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.http import urlencode
 from ckeditor.fields import RichTextField
-
+import math
+from decimal import Decimal
 class Event(models.Model):
     name = models.CharField(max_length=100)
     start_date = models.DateTimeField()
@@ -96,6 +97,12 @@ class Order(models.Model):
         default=0.00,
         verbose_name="Jarak (km)"
     )
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Harga Total"
+    )
     discount_applied = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
@@ -114,33 +121,26 @@ class Order(models.Model):
             f"Saya ingin order dari *{self.firstLocation}* ke *{self.lastLocation}*.\n"
             f"Pesan tambahan: {self.messages if self.messages else '-'}\n"
             f"Status: {self.status}\n"
-            f"{voucher_text}"
+            f"{voucher_text}\n"
+            f"Jarak: {self.distance}"
         )
 
         params = {"phone": wa_number, "text": message}
         return f"https://api.whatsapp.com/send?{urlencode(params)}"
 
     def apply_voucher(self):
-        """
-        Terapkan voucher jika:
-        1. Voucher tersedia dan valid.
-        2. Nomor telepon tersebut belum pernah menggunakan voucher pada event yang sama.
-        """
         if self.voucher and self.voucher.is_valid():
-            # Cek histori order untuk event yang sama, kecuali order yang sedang diproses
-            if Order.objects.filter(
-                    phone_number=self.phone_number,
-                    voucher__isnull=False,
-                    event=self.event
-            ).exclude(id=self.id).exists():
-                raise ValueError("Voucher hanya dapat digunakan satu kali per event!")
-
-            # Hitung diskon sesuai tipe voucher
+            # Hitung ulang harga setelah diskon
             if self.voucher.discount_type == "percent":
-                self.discount_applied = self.calculate_discount(self.voucher.discount, "percent")
+                self.discount_applied = (self.voucher.discount / 100) * self.price
             else:
-                self.discount_applied = self.calculate_discount(self.voucher.discount, "fixed")
-
+                self.discount_applied = min(
+                    self.voucher.discount, 
+                    self.price
+                )
+            
+            # Harga akhir tidak bisa minus
+            self.price = max(self.price - self.discount_applied, 0)
             self.voucher.use_voucher()
             self.save()
 
@@ -149,6 +149,14 @@ class Order(models.Model):
         if discount_type == "percent":
             return (discount_value / 100) * total_amount
         return discount_value
+
+    def save(self, *args, **kwargs):
+        """Hitung harga otomatis berdasarkan jarak sebelum menyimpan"""
+        if self.distance:
+            # Hitung jumlah segmen 4 km (pembulatan ke atas)
+            segmen = math.ceil(float(self.distance) / 4)
+            self.price = Decimal(segmen) * Decimal('8500.00')
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Order {self.id} - {self.customer_name}"

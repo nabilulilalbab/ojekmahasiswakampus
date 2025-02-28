@@ -127,7 +127,7 @@
             </div>
             <div class="flex items-center">
               <i class="fas fa-clock text-blue-500 mr-2"></i>
-              <span>Waktu: <span id="routeDuration" class="font-medium">-</span> menit</span>
+              <span>Waktu: <span id="routeDuration" class="font-medium">-</span> menit</span>  <span>Estimasi Harga: Rp <span id="routePrice" class="font-medium">0</span>
             </div>
           </div>
         </div>
@@ -497,6 +497,15 @@
           document.getElementById('routeDistance').textContent = (distance / 1000).toFixed(2);
           document.getElementById('routeDuration').textContent = Math.round(duration / 60);
           document.getElementById('id_distance').value = (distance / 1000).toFixed(2);
+          
+          const distance_km = (distance / 1000).toFixed(2);
+          const segmen = Math.ceil(distance_km / 4);
+          const harga = segmen * 8500; 
+          // Update UI
+          document.getElementById('routePrice').textContent = harga.toLocaleString('id-ID');
+          document.getElementById('id_distance').value = distance_km;
+
+
           map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
         } catch (error) {
           console.error('Error getting route:', error);
