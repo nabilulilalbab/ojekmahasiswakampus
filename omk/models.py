@@ -129,7 +129,7 @@ class Order(models.Model):
 
         # Susun pesan utama
         message = (
-            f"🚖 *PESANAN BARU* 🚖\n\n"
+            f"*PESANAN BARU*\n\n"
             f"👤 *Nama:* {self.customer_name}\n"
             f"📱 *Nomor HP:* {self.phone_number}\n\n"
             f"📍 *Lokasi Penjemputan:*\n{self.firstLocation}\n\n"
@@ -167,13 +167,18 @@ class Order(models.Model):
         return discount_value
 
     def save(self, *args, **kwargs):
-        """Hitung harga otomatis berdasarkan jarak sebelum menyimpan"""
+        """Hitung harga berdasarkan aturan baru"""
         if self.distance:
-            # Hitung jumlah segmen 4 km (pembulatan ke atas)
-            segmen = math.ceil(float(self.distance) / 4)
-            self.price = Decimal(segmen) * Decimal('8500.00')
+            distance = float(self.distance)
+            if distance <= 4:
+                self.price = Decimal('8500.00')
+            else:
+                # Hitung km tambahan (dibulatkan ke atas)
+                additional_km = math.ceil(distance - 4)
+                # Harga per km = 8500 / 4 = 2125
+                self.price = Decimal('8500.00') + (Decimal(additional_km) * Decimal('2125.00'))
         super().save(*args, **kwargs)
-
+    
     def __str__(self):
         return f"Order {self.id} - {self.customer_name}"
 

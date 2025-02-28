@@ -498,9 +498,12 @@
           document.getElementById('routeDuration').textContent = Math.round(duration / 60);
           document.getElementById('id_distance').value = (distance / 1000).toFixed(2);
           
-          const distance_km = (distance / 1000).toFixed(2);
-          const segmen = Math.ceil(distance_km / 4);
-          const harga = segmen * 8500; 
+          const distance_km = parseFloat((distance / 1000).toFixed(2));
+          let harga = 8500;
+          if(distance_km > 4) {
+            const additionalKm = Math.ceil(distance_km - 4);
+            harga += additionalKm * 2125;
+          }
           // Update UI
           document.getElementById('routePrice').textContent = harga.toLocaleString('id-ID');
           document.getElementById('id_distance').value = distance_km;
