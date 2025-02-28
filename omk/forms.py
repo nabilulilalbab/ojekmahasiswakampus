@@ -54,6 +54,11 @@ class OrderForm(forms.ModelForm):
         if len(phone) < 10 or len(phone) > 13:
             raise forms.ValidationError('Nomor telepon tidak valid')
         return phone
+    def clean_distance(self):
+        distance = self.cleaned_data.get('distance')
+        if distance < 0:
+            raise forms.ValidationError("Jarak tidak boleh negatif")
+        return distance
 
 
 class VoucherForm(forms.Form):
