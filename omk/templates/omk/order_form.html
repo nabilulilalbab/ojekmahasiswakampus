@@ -144,7 +144,7 @@
             <p class="mt-1 text-sm text-red-600">{{ form.customer_name.errors.0 }}</p>
             {% endif %}
           </div>
-
+          <p class="text-sm text-gray-600">Note: Jika Tidak Menemukan Lokasi & Tujuan Anda Harap Isi Manual</p>
           <!-- Lokasi -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="relative">
@@ -217,7 +217,13 @@
             </div>
             <div id="voucherResult" class="mt-2 hidden"></div>
           </div>
-
+ 
+         <!-- Di dalam form di order_form.html -->
+         <input type="hidden" name="distance" id="id_distance">
+          <p class="text-sm text-gray-500 mt-4">
+   Harap sertakan tautan lokasi (Share Location) melalui WhatsApp, baik lokasi tersedia maupun tidak di sistem kami. 
+   Hal ini bertujuan untuk memastikan akurasi perhitungan biaya, terutama jika lokasi telah terdaftar di Google Maps.
+</p>
           <!-- Submit Button -->
           <div class="flex justify-center pt-4">
             <button type="submit" class="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-medium rounded-lg
@@ -490,7 +496,7 @@
           document.getElementById('routeInfo').classList.remove('hidden');
           document.getElementById('routeDistance').textContent = (distance / 1000).toFixed(2);
           document.getElementById('routeDuration').textContent = Math.round(duration / 60);
-
+          document.getElementById('id_distance').value = (distance / 1000).toFixed(2);
           map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
         } catch (error) {
           console.error('Error getting route:', error);

@@ -7,7 +7,7 @@ from django.utils import timezone
 from .models import Order, Voucher, Event, BannerEvent
 from .forms import OrderForm, VoucherForm
 from django.conf import settings
-
+from decimal import Decimal, InvalidOperation
 class HomeView(TemplateView):
     template_name = 'omk/home.html'
 
@@ -81,6 +81,12 @@ class OrderCreateView(CreateView):
             messages.error(self.request, "Tidak ada event yang aktif saat ini.")
             return redirect(self.success_url)
         order.event = current_event
+        # Ambil nilai distance dari POST
+        distance_str = self.request.POST.get('distance', '0')
+        try:
+            order.distance = Decimal(distance_str)
+        except (InvalidOperation, TypeError):
+            order.distance = Decimal('0.00')
         order.save()
 
         voucher_code = self.request.POST.get('voucher_code')

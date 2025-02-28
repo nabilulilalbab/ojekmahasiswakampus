@@ -90,6 +90,12 @@ class Order(models.Model):
         blank=True,
         help_text="Voucher yang digunakan pada order ini."
     )
+    distance = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Jarak (km)"
+    )
     discount_applied = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
