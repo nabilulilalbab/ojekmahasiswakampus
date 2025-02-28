@@ -1,5 +1,3 @@
----
-
 # Ojek Mahasiswa Kampus
 
 **Ojek Mahasiswa Kampus** adalah aplikasi berbasis web yang dirancang untuk memudahkan mahasiswa dalam melakukan pemesanan layanan antar jemput di sekitar kampus dengan harga terjangkau. Aplikasi ini memanfaatkan teknologi Django untuk pengelolaan order, validasi voucher diskon, serta pengecekan harga perjalanan secara real-time.
@@ -99,4 +97,3 @@ Project ini dilisensikan di bawah [MIT License](LICENSE).
 
 Untuk pertanyaan lebih lanjut, silakan hubungi [nabilulilalbab](https://github.com/nabilulilalbab).
 
----
