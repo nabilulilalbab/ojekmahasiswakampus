@@ -3,12 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Node modules
+node_modules/
+
 # Virtual environment
 venv/
 .env
 *.env
-
-
 
 .venv/
 .venv
@@ -25,15 +26,64 @@ media/
 
 # Static and media files
 staticfiles/
-
+media/
+static/admin/
+static/debug_toolbar/
+static/rest_framework/
+static/node_modules
 
 # IDE/editor specific files
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
+*.pyc
+.project
+.pydevproject
+.settings/
+*.swp
+*.swo
 
 # macOS/Linux system files
 .DS_Store
 *.swp
 *~
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Test cache
+.pytest_cache/
+.tox/
+.cache
+
+# Documentation
+docs/_build/
+doc/build/
+
+# Package files
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# Logs dan temporary files
+*.log
+*.pot
+*.pyc
+local_settings.py
+celerybeat-schedule
+celerybeat.pid
