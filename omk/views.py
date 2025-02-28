@@ -64,6 +64,7 @@ class OrderCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['voucher_form'] = VoucherForm()
         context['OPENROUTE_API_KEY'] = settings.OPENROUTE_API_KEY
         print("Template context:", context)  # Debug print
         return context
@@ -167,9 +168,3 @@ class CheckVoucherView(FormView):
             'message': 'Form tidak valid'
         })
 
-def order_form(request):
-    context = {
-        'form': form,
-        'OPENROUTE_API_KEY': settings.OPENROUTE_API_KEY,
-    }
-    return render(request, 'omk/order_form.html', context)
