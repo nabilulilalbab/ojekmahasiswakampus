@@ -1,4 +1,3 @@
-
 ---
 
 # Ojek Mahasiswa Kampus
@@ -88,6 +87,10 @@ ojekmahasiswakampus/
 
 Kontribusi sangat diterima! Silakan fork repository ini, buat branch fitur/bugfix, dan ajukan pull request. Pastikan untuk mengikuti standar coding yang ada.
 
+**Kontributor:**  
+- [nabilulilalbab](https://github.com/nabilulilalbab)  
+- [bimadevs](https://github.com/bimadevs)  
+
 ## Lisensi
 
 Project ini dilisensikan di bawah [MIT License](LICENSE).
@@ -97,5 +100,3 @@ Project ini dilisensikan di bawah [MIT License](LICENSE).
 Untuk pertanyaan lebih lanjut, silakan hubungi [nabilulilalbab](https://github.com/nabilulilalbab).
 
 ---
-
-README ini menyediakan gambaran menyeluruh mengenai project, cara instalasi, dan fitur yang ada. Sesuaikan bagian API key dan konfigurasi sesuai kebutuhan project kamu.
