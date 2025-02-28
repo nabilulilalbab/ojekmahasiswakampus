@@ -76,8 +76,11 @@ class Order(models.Model):
     )
     customer_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=20, help_text="Nomor telepon customer.")
-    firstLocation = models.CharField(max_length=100)
-    lastLocation = models.CharField(max_length=100)
+   
+    # variable untuk lokasi penjemputan dan tujuan
+    firstLocation = models.CharField(max_length=100, verbose_name="Lokasi Penjemputan")
+    lastLocation = models.CharField(max_length=100, verbose_name="Lokasi Tujuan")
+
     messages = models.TextField(max_length=500, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     voucher = models.ForeignKey(

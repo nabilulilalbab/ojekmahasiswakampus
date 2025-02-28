@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["ojekmahasiswakampus.biz.id","ojekmahasiswakampus.sgp.dom.my.id","localhost", "127.0.0.1" , "ojekmahasiswakampus.biz.id","*"]
 
@@ -140,3 +140,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# OpenRouteService API Settings
+OPENROUTE_API_KEY = str(os.getenv('OPENROUTE_API_KEY'))   

@@ -38,11 +38,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- AOS CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     body {
       font-family: 'Poppins', sans-serif;
     }
   </style>
+
+  {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-100">
   <!-- Header -->
@@ -163,15 +167,13 @@
   </div>
 </footer>
 
-  <!-- AOS JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <!-- JavaScript libraries -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    AOS.init({
-      duration: 1000,
-      once: true,
-    });
+    AOS.init();
   </script>
 
-  {% block scripts %}{% endblock %}
+  {% block extra_js %}{% endblock %}
 </body>
 </html>
