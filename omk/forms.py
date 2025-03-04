@@ -15,38 +15,38 @@ class OrderForm(forms.ModelForm):
         widgets = {
             'customer_name': forms.TextInput(
                 attrs={
-                    'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'class': 'form-input w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200',
                     'placeholder': 'Masukkan nama lengkap Anda'
                 }
             ),
             'phone_number': forms.TextInput(
                 attrs={
-                    'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'class': 'form-input w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200',
                     'placeholder': 'Format: 08xxxxxxxxxx'
                 }
             ),
             'firstLocation': forms.TextInput(
                 attrs={
-                    'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'class': 'form-input w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200',
                     'placeholder': 'Lokasi penjemputan'
                 }
             ),
             'lastLocation': forms.TextInput(
                 attrs={
-                    'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'class': 'form-input w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200',
                     'placeholder': 'Lokasi tujuan'
                 }
             ),
             'pickup_time': forms.TimeInput(
                 format='%H:%M',
                 attrs={
-                    'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'class': 'form-input w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200',
                     'type': 'time',
                 }
             ),
             'messages': forms.Textarea(
                 attrs={
-                    'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'class': 'form-input w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200',
                     'rows': 3,
                     'placeholder': 'Contoh: Jemput di lobby, bawa helm sendiri, dll.'
                 }
@@ -74,7 +74,7 @@ class VoucherForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                'class': 'form-input w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200',
                 'placeholder': 'Masukkan kode voucher (jika ada)'
             }
         )

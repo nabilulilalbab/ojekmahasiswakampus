@@ -11,35 +11,38 @@
     height: 400px !important;
     width: 100% !important;
     z-index: 1;
-    border-radius: 0.5rem;
+    border-radius: 1.5rem;
     margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
   }
 
   .route-info {
     background: white;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    border-radius: 1.5rem;
     margin-bottom: 2rem;
-    border-left: 4px solid #3B82F6;
+    border-left: 4px solid #6366f1;
   }
 
   .route-info i {
-    color: #3B82F6;
+    color: #6366f1;
     margin-right: 0.5rem;
   }
 
   .search-results {
     position: absolute;
     background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 0.5rem;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 1rem;
     max-height: 200px;
     overflow-y: auto;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     width: 100%;
     z-index: 1000;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     margin-top: 0.25rem;
   }
 
@@ -50,7 +53,8 @@
   }
 
   .search-result-item:hover {
-    background-color: #F3F4F6;
+    background-color: #f9fafb;
+    color: #4338ca;
   }
 
   .current-location-btn {
@@ -92,41 +96,71 @@
     text-align: center;
     margin-bottom: 2rem;
   }
+  
+  .map-fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999;
+    border-radius: 0 !important;
+  }
+  
+  .exit-fullscreen {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    background: white;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-12">
-  <div class="mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header Section -->
-    <section class="py-16 bg-gradient-to-r from-blue-500 to-blue-600 text-white" data-aos="fade-down">
+    <section class="py-16 bg-gradient-to-r from-indigo-600 to-pink-500 text-white rounded-xl shadow-soft-lg" data-aos="fade-down">
       <div class="container mx-auto px-4 text-center">
-        <h1 class="text-3xl md:text-4xl font-bold animate__animated animate__fadeInDown">Pesan Perjalananmu Sekarang
+        <h1 class="soft-title animate__animated animate__fadeInDown mb-4">Pesan Perjalananmu <span class="text-white font-bold">Sekarang</span>
         </h1>
-        <p class="mt-4 text-lg animate__animated animate__fadeInDown animate__delay-1s">
+        <p class="mt-4 text-lg md:text-xl animate__animated animate__fadeInDown animate__delay-1s opacity-90">
           Isi formulir di bawah untuk memesan perjalanan dengan driver mahasiswa
         </p>
       </div>
     </section>
 
     <!--  Order Form Section -->
-    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+    <div class="bg-white rounded-xl shadow-soft-lg p-6 md:p-8 mt-8">
       <form method="post" id="orderForm">
         {% csrf_token %}
 
         <!-- Map Container -->
-        <div id="map" class="w-full h-96 rounded-lg shadow-md mb-8 z-0"></div>
+        <div class="w-full rounded-3xl overflow-hidden shadow-soft-lg mb-8 relative">
+          <div id="map" class="w-full h-96 z-0"></div>
+          <div class="absolute inset-0 pointer-events-none rounded-3xl border border-indigo-100 border-opacity-50 shadow-inner"></div>
+          <div class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-soft-lg z-10">
+            <button type="button" id="mapFullScreen" class="text-indigo-600 hover:text-indigo-800 focus:outline-none transition-all duration-300">
+              <i class="fas fa-expand"></i>
+            </button>
+          </div>
+        </div>
 
         <!-- Route Info -->
-        <div id="routeInfo" class="hidden bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-8">
-          <h3 class="font-semibold text-gray-900 mb-2">Informasi Rute:</h3>
+        <div id="routeInfo" class="hidden bg-gradient-to-r from-indigo-50 to-pink-50 border border-indigo-100 rounded-3xl shadow-soft p-6 mb-8">
+          <h3 class="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-500 mb-3">Informasi Rute:</h3>
           <div class="grid grid-cols-2 gap-4">
             <div class="flex items-center">
-              <i class="fas fa-road text-blue-500 mr-2"></i>
+              <i class="fas fa-road text-accent-500 mr-2"></i>
               <span>Jarak: <span id="routeDistance" class="font-medium">-</span> km</span>
             </div>
             <div class="flex items-center">
-              <i class="fas fa-clock text-blue-500 mr-2"></i>
+              <i class="fas fa-clock text-accent-500 mr-2"></i>
               <span>Waktu: <span id="routeDuration" class="font-medium">-</span> menit </span>  <span>Estimasi Harga: Rp <span id="routePrice" class="font-medium">0</span>
             </div>
           </div>
@@ -139,12 +173,12 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">
               {{ form.customer_name.label }}
             </label>
-            {{ form.customer_name }}
+            {{ form.customer_name.as_widget|safe }}
             {% if form.customer_name.errors %}
             <p class="mt-1 text-sm text-red-600">{{ form.customer_name.errors.0 }}</p>
             {% endif %}
           </div>
-          <p class="text-sm text-gray-600">Note: Jika Tidak Menemukan Lokasi & Tujuan Anda Harap Isi Manual</p>
+          <p class="text-sm text-gray-600 border-l-2 border-indigo-500 pl-2 py-1 bg-indigo-50 rounded-r-lg">Note: Jika tidak menemukan lokasi & tujuan Anda harap isi manual</p>
           <!-- Lokasi -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="relative">
@@ -152,15 +186,15 @@
                 {{ form.firstLocation.label }}
               </label>
               <div class="relative">
-                {{ form.firstLocation }}
+                {{ form.firstLocation.as_widget|safe }}
                 <button type="button" id="useCurrentLocation"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors duration-200"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition-all duration-200 shadow-sm"
                   title="Gunakan lokasi saat ini">
                   <i class="fas fa-crosshairs"></i>
                 </button>
               </div>
               <div id="startLocationResults"
-                class="hidden absolute w-full mt-1 bg-white rounded-lg shadow-lg max-h-48 overflow-y-auto z-50"></div>
+                class="hidden absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-soft max-h-48 overflow-y-auto z-50"></div>
               {% if form.firstLocation.errors %}
               <p class="mt-1 text-sm text-red-600">{{ form.firstLocation.errors.0 }}</p>
               {% endif %}
@@ -170,7 +204,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ form.lastLocation.label }}
               </label>
-              {{ form.lastLocation }}
+              {{ form.lastLocation.as_widget|safe }}
               <div id="endLocationResults"
                 class="hidden absolute w-full mt-1 bg-white rounded-lg shadow-lg max-h-48 overflow-y-auto z-50"></div>
               {% if form.lastLocation.errors %}
@@ -184,7 +218,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">
               {{ form.phone_number.label }}
             </label>
-            {{ form.phone_number }}
+            {{ form.phone_number.as_widget|safe }}
             {% if form.phone_number.errors %}
             <p class="mt-1 text-sm text-red-600">{{ form.phone_number.errors.0 }}</p>
             {% endif %}
@@ -193,7 +227,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Jemput</label>
             <div class="relative">
-              {{ form.pickup_time }}
+              {{ form.pickup_time.as_widget|safe }}
               <!--<i class="fas fa-clock absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-500"></i>-->
             </div>
           </div>
@@ -202,42 +236,48 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">
               {{ form.messages.label }}
             </label>
-            {{ form.messages }}
+            {{ form.messages.as_widget|safe }}
             {% if form.messages.errors %}
             <p class="mt-1 text-sm text-red-600">{{ form.messages.errors.0 }}</p>
             {% endif %}
           </div>
 
           <!-- Voucher Section -->
-          <div class="mb-6 p-4 bg-blue-50 rounded-lg" data-aos="fade-right">
+          <div class="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-100 shadow-sm" data-aos="fade-right">
             <div class="flex flex-col md:flex-row md:items-end gap-4">
               <div class="flex-grow">
                 <label for="{{ voucher_form.voucher_code.id_for_label }}" class="block text-gray-700 font-medium mb-2">
-                  Kode Voucher (Opsional)
+                  <span class="flex items-center">
+                    <i class="fas fa-ticket-alt text-indigo-500 mr-2"></i>
+                    Kode Voucher (Opsional)
+                  </span>
                 </label>
-                {{ voucher_form.voucher_code }}
+                {{ voucher_form.voucher_code.as_widget|safe }}
               </div>
               <button type="button" id="checkVoucher"
-                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition transform hover:scale-105">
+                class="bg-gradient-to-r from-indigo-600 to-pink-500 text-white text-sm px-4 py-2 rounded-xl shadow-soft hover:shadow-soft-lg transition-all duration-300 transform hover:-translate-y-1">
                 Cek Voucher
               </button>
             </div>
-            <div id="voucherResult" class="mt-2 hidden"></div>
+            <div id="voucherResult" class="mt-2 hidden p-2 rounded-lg text-sm font-medium"></div>
           </div>
  
          <!-- Di dalam form di order_form.html -->
          <input type="hidden" name="distance" id="id_distance">
-          <p class="text-sm text-gray-500 mt-4">
-   Harap sertakan tautan lokasi (Share Location) melalui WhatsApp, baik lokasi tersedia maupun tidak di sistem kami. 
-   Hal ini bertujuan untuk memastikan akurasi perhitungan biaya, terutama jika lokasi telah terdaftar di Google Maps.
-</p>
+          <div class="mt-4 bg-gradient-to-r from-indigo-50 to-pink-50 p-5 rounded-2xl border border-indigo-100 shadow-soft">
+            <p class="text-gray-800 text-sm">
+              <i class="fas fa-info-circle text-indigo-600 mr-2"></i>
+              Harap sertakan tautan lokasi (Share Location) melalui WhatsApp, baik lokasi tersedia maupun tidak di sistem kami. 
+              Hal ini bertujuan untuk memastikan akurasi perhitungan biaya, terutama jika lokasi telah terdaftar di Google Maps.
+            </p>
+          </div>
           <!-- Submit Button -->
           <div class="flex justify-center pt-4">
-            <button type="submit" class="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-medium rounded-lg
-                                       hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
-                                       focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50
-                                       disabled:cursor-not-allowed">
-              Pesan Sekarang
+            <button type="submit" class="w-full md:w-auto px-8 py-3 rounded-xl
+                                       bg-gradient-to-r from-indigo-600 to-pink-500 text-white font-medium
+                                       focus:ring-2 focus:ring-indigo-200 focus:ring-offset-2 transition-all duration-300 disabled:opacity-50
+                                       disabled:cursor-not-allowed shadow-soft hover:shadow-soft-lg transform hover:-translate-y-1">
+              <i class="fas fa-motorcycle mr-2"></i> Pesan Sekarang
             </button>
           </div>
         </div>
@@ -249,7 +289,7 @@
 
 <!-- Search Result Item Template -->
 <template id="search-result-template">
-  <div class="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
+  <div class="px-4 py-3 hover:bg-primary-50 cursor-pointer transition-all duration-200">
     <!-- Content will be inserted here by JavaScript -->
   </div>
 </template>
@@ -524,6 +564,38 @@
       }
     }
 
+    // Map Fullscreen functionality
+    const mapContainer = document.getElementById('map');
+    const mapFullScreenBtn = document.getElementById('mapFullScreen');
+    let isFullScreen = false;
+    
+    mapFullScreenBtn.addEventListener('click', function() {
+      if (!isFullScreen) {
+        // Enter fullscreen
+        mapContainer.classList.add('map-fullscreen');
+        mapFullScreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        mapFullScreenBtn.classList.add('exit-fullscreen');
+        setTimeout(() => {
+          map.invalidateSize();
+          if (routeLayer) {
+            map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
+          }
+        }, 100);
+      } else {
+        // Exit fullscreen
+        mapContainer.classList.remove('map-fullscreen');
+        mapFullScreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        mapFullScreenBtn.classList.remove('exit-fullscreen');
+        setTimeout(() => {
+          map.invalidateSize();
+          if (routeLayer) {
+            map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
+          }
+        }, 100);
+      }
+      isFullScreen = !isFullScreen;
+    });
+    
     // Form validation
     document.getElementById('orderForm').addEventListener('submit', function (e) {
       const firstLocation = document.getElementById('id_firstLocation').value;

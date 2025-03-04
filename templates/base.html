@@ -25,8 +25,9 @@
   <!-- Preconnect ke CDN -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS and Custom CSS -->
   <link href="{% static 'src/output.css' %}" rel="stylesheet">
+  <link href="{% static 'css/custom.css' %}" rel="stylesheet">
   <!-- Animate.css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <!-- Font Awesome -->
@@ -34,7 +35,8 @@
   <!-- Alpine.js -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.8.1/dist/cdn.min.js" defer></script>
   <!-- Google Fonts -->
-  <!-- Google Fonts dengan display swap -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- AOS CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
@@ -43,40 +45,61 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
+      scroll-behavior: smooth;
+    }
+    
+    /* Brutalist scrollbar */
+    ::-webkit-scrollbar {
+      width: 15px;
+      height: 15px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #ffffff;
+      border: 2px solid #000000;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #000000;
+      border: 2px solid #ffffff;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff3b5c;
     }
   </style>
 
   {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
   <!-- Header -->
-  <header x-data="{ open: false }" class="bg-white shadow animate__animated animate__fadeInDown" aria-label="Header utama">
-    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+  <header x-data="{ open: false }" class="glass-effect sticky top-0 z-50 animate__animated animate__fadeInDown bg-white bg-opacity-90 backdrop-blur-lg shadow-soft-lg" aria-label="Header utama">
+    <div class="container mx-auto px-6 py-5 flex items-center justify-between">
       <a href="{% url 'omk:home' %}" class="flex items-center space-x-3">
   <!-- Logo SVG yang diperbesar -->
   <img
     src="{% static 'images/logo.svg' %}"
     alt="OMK Logo"
-    class="h-12 w-auto transition-transform hover:scale-105 flex-shrink-0"
+    class="h-12 w-auto transition-all duration-300 hover:scale-105 flex-shrink-0 filter drop-shadow-md"
   >
-  <span class="text-2xl font-bold text-indigo-600 hidden md:block">
-    OM<span class="text-indigo-400">K</span>
+  <span class="text-2xl font-semibold text-gray-900 hidden md:block font-display">
+    <span class="bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent">OMK</span>
   </span>
 </a>
-      <nav class="hidden md:flex space-x-6 items-center" aria-label="Navigasi utama">
-        <a href="{% url 'omk:home' %}" class="text-gray-700 hover:text-indigo-600 transition" aria-current="page">Beranda</a>
-        <a href="{% url 'omk:order_create' %}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500 transition">Pesan Sekarang</a>
+      <nav class="hidden md:flex space-x-8 items-center" aria-label="Navigasi utama">
+        <a href="{% url 'omk:home' %}" class="soft-nav-link text-base font-medium" aria-current="page">Beranda</a>
+        <a href="{% url 'omk:order_create' %}" class="btn-primary text-sm px-6 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-indigo-600 to-pink-500">Pesan Sekarang</a>
       </nav>
       <!-- Mobile Menu Button -->
-      <button @click="open = !open" class="md:hidden text-gray-700 focus:outline-none" :aria-expanded="open" aria-label="Toggle navigasi mobile">
+      <button @click="open = !open" class="md:hidden text-indigo-600 focus:outline-none" :aria-expanded="open" aria-label="Toggle navigasi mobile">
         <i class="fas fa-bars text-2xl"></i>
       </button>
     </div>
     <!-- Mobile Menu -->
-    <div x-show="open" class="md:hidden bg-white" x-cloak>
-      <nav class="px-4 pt-2 pb-4 space-y-2">
-        <a href="{% url 'omk:home' %}" class="block text-gray-700 hover:text-indigo-600 transition">Beranda</a>
-        <a href="{% url 'omk:order_create' %}" class="block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500 transition text-center">Pesan Sekarang</a>
+    <div x-show="open" class="md:hidden bg-white bg-opacity-95 backdrop-blur-md border-t border-gray-100" x-cloak>
+      <nav class="px-6 pt-4 pb-6 space-y-4">
+        <a href="{% url 'omk:home' %}" class="block soft-nav-link py-3 text-center text-base font-medium">Beranda</a>
+        <a href="{% url 'omk:order_create' %}" class="block btn-primary rounded-full text-sm px-5 py-3.5 text-center w-full shadow-md bg-gradient-to-r from-indigo-600 to-pink-500">Pesan Sekarang</a>
       </nav>
     </div>
   </header>
@@ -87,13 +110,13 @@
   </main>
 
 <!-- Footer -->
-<footer class="bg-indigo-700 text-white py-8" role="contentinfo" itemscope itemtype="https://schema.org/LocalBusiness">
+<footer class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-12 rounded-t-xl shadow-soft-lg mt-12" role="contentinfo" itemscope itemtype="https://schema.org/LocalBusiness">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <!-- Bagian Tentang OMK -->
       <div class="lg:max-w-xs" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
         <h4 class="text-xl font-bold mb-4" itemprop="name">OMK</h4>
-        <p class="text-indigo-200 leading-relaxed" itemprop="description">
+        <p class="text-white text-opacity-80 leading-relaxed" itemprop="description">
           Platform ojek mahasiswa dengan harga terjangkau dan privasi terjamin. Layanan operasional 24 jam untuk mendukung mobilitas kampus Anda.
         </p>
         <meta itemprop="streetAddress" content="Jl. Sidodadi Timur No. 24 (Depan Kampus PGRI)">
@@ -109,13 +132,13 @@
       <div class="lg:max-w-xs">
         <h4 class="text-xl font-bold mb-4">Kontak</h4>
         <div class="space-y-3" itemprop="contactPoint" itemscope itemtype="https://schema.org/ContactPoint">
-          <p class="flex items-start text-indigo-200" itemprop="email">
+          <p class="flex items-start text-white text-opacity-80" itemprop="email">
             <i class="fas fa-envelope mr-2 mt-1 flex-shrink-0"></i>
             <span class="break-words whitespace-normal">
               ojekmahasiswakampus@gmail.com
             </span>
           </p>
-          <p class="flex items-center text-indigo-200" itemprop="telephone">
+          <p class="flex items-center text-white text-opacity-80" itemprop="telephone">
             <i class="fas fa-phone mr-2 flex-shrink-0"></i>
             +62 8820-0880-9231
           </p>
@@ -131,17 +154,17 @@
         <h4 class="text-xl font-bold mb-4">Ikuti Kami</h4>
         <div class="flex flex-wrap gap-4" itemprop="sameAs">
           <a href="https://www.instagram.com/ojekmahasiswakampus/"
-             class="text-indigo-200 hover:text-white transition-transform hover:scale-110">
+             class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
             <i class="fab fa-instagram text-2xl"></i>
             <span class="sr-only">Instagram</span>
           </a>
           <a href="https://twitter.com/omk_semarang"
-             class="text-indigo-200 hover:text-white transition-transform hover:scale-110">
+             class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
             <i class="fab fa-twitter text-2xl"></i>
             <span class="sr-only">Twitter</span>
           </a>
           <a href="https://www.tiktok.com/@ojek.mahasiswa.ka"
-             class="text-indigo-200 hover:text-white transition-transform hover:scale-110">
+             class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
             <i class="fab fa-tiktok text-2xl"></i>
             <span class="sr-only">TikTok</span>
           </a>
@@ -152,7 +175,7 @@
     </div>
 
     <!-- Copyright -->
-    <div class="mt-8 pt-8 border-t border-indigo-600 text-center text-indigo-300">
+    <div class="mt-8 pt-8 border-t border-white border-opacity-10 text-center text-white text-opacity-80">
       <p class="text-sm md:text-base">
         &copy; {% now "Y" %} OMK. Hak Cipta Dilindungi.<br class="md:hidden">
         <span class="hidden md:inline">•</span>
