@@ -127,7 +127,7 @@
             </div>
             <div class="flex items-center">
               <i class="fas fa-clock text-blue-500 mr-2"></i>
-              <span>Waktu: <span id="routeDuration" class="font-medium">-</span> menit</span>  <span>Estimasi Harga: Rp <span id="routePrice" class="font-medium">0</span>
+              <span>Waktu: <span id="routeDuration" class="font-medium">-</span> menit </span>  <span>Estimasi Harga: Rp <span id="routePrice" class="font-medium">0</span>
             </div>
           </div>
         </div>
@@ -189,7 +189,14 @@
             <p class="mt-1 text-sm text-red-600">{{ form.phone_number.errors.0 }}</p>
             {% endif %}
           </div>
-
+          <!-- Waktu Jemput -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Jemput</label>
+            <div class="relative">
+              {{ form.pickup_time }}
+              <!--<i class="fas fa-clock absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-500"></i>-->
+            </div>
+          </div>
           <!-- Pesan Tambahan -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">

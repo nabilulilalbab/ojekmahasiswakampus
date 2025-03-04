@@ -82,6 +82,8 @@ class Order(models.Model):
     firstLocation = models.CharField(max_length=255, verbose_name="Lokasi Penjemputan")
     lastLocation = models.CharField(max_length=255, verbose_name="Lokasi Tujuan")
 
+    # Waktu jemput
+    pickup_time = models.TimeField(verbose_name="Waktu Jemput", help_text="Format: HH:MM")
     messages = models.TextField(max_length=500, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     voucher = models.ForeignKey(

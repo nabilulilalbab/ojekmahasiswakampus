@@ -4,7 +4,7 @@ from .models import Order
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['customer_name', 'phone_number', 'firstLocation', 'lastLocation', 'messages']
+        fields = ['customer_name', 'phone_number', 'firstLocation', 'lastLocation', 'messages', 'pickup_time']
         labels = {
             'customer_name': 'Nama Lengkap',
             'phone_number': 'Nomor WhatsApp',
@@ -37,13 +37,20 @@ class OrderForm(forms.ModelForm):
                     'placeholder': 'Lokasi tujuan'
                 }
             ),
+            'pickup_time': forms.TimeInput(
+                format='%H:%M',
+                attrs={
+                    'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'type': 'time',
+                }
+            ),
             'messages': forms.Textarea(
                 attrs={
                     'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500',
                     'rows': 3,
                     'placeholder': 'Contoh: Jemput di lobby, bawa helm sendiri, dll.'
                 }
-            )
+            ),
         }
 
     def clean_phone_number(self):
