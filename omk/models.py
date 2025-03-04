@@ -139,9 +139,10 @@ class Order(models.Model):
             f"📏 *Jarak Tempuh:* {formatted_distance} km\n"
             f"💸 *Harga Akhir:* Rp {formatted_price}\n\n"
             f"{voucher_text if self.voucher else ''}"
-            f"📝 *Catatan Tambahan:*\n{self.messages if self.messages else '-'}\n\n"
+            f"📝 *Catatan Tambahan:*\n{self.messages if self.messages else '-'}\n"
+            f"⏰ *Pickup Time:* {self.pickup_time.strftime('%H:%M')}\n\n"
             f"🔄 *Status Pesanan:* {self.status.upper()}"
-        )
+            )
 
         params = {"phone": wa_number, "text": message}
         return f"https://api.whatsapp.com/send?{urlencode(params)}"
