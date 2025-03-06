@@ -1,5 +1,5 @@
 annotated-types==0.7.0
-attrs==23.2.1.dev0
+attrs==23.2.1.0
 autocommand==2.2.2
 btrfsutil==6.13
 build==1.2.2
