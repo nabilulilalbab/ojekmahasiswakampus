@@ -1,5 +1,5 @@
 annotated-types==0.7.0
-attrs==23.2.1.0
+attrs==23.2.0
 autocommand==2.2.2
 btrfsutil==6.13
 build==1.2.2
@@ -67,4 +67,3 @@ ufw==0.36.2
 urllib3==2.3.0
 waypaper==2.5
 wheel==0.45.0
-widget-tweaks
