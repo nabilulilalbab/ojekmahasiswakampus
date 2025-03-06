@@ -4,6 +4,7 @@ from django.utils.http import urlencode
 from ckeditor.fields import RichTextField
 import math
 from decimal import Decimal
+from urllib.parse import quote
 class Event(models.Model):
     name = models.CharField(max_length=100)
     start_date = models.DateTimeField()
@@ -144,8 +145,10 @@ class Order(models.Model):
             f"🔄 *Status Pesanan:* {self.status.upper()}"
             )
 
-        params = {"phone": wa_number, "text": message}
-        return f"https://api.whatsapp.com/send?{urlencode(params)}"
+        # params = {"phone": wa_number, "text": message}
+        # return f"https://api.whatsapp.com/send?{urlencode(params)}"
+        encoded_message = quote(message)  # Encode teks untuk URL
+        return f"https://wa.me/{wa_number}?text={encoded_message}"
     
     def apply_voucher(self):
         if self.voucher and self.voucher.is_valid():
@@ -195,3 +198,13 @@ class BannerEvent(models.Model):
     updated = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+
+class Feedback(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_processed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Feedback dari {self.name}"

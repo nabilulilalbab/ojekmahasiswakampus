@@ -1,5 +1,5 @@
 from django import forms
-from .models import Order
+from .models import Order,Feedback
 
 class OrderForm(forms.ModelForm):
     class Meta:
@@ -79,3 +79,20 @@ class VoucherForm(forms.Form):
             }
         )
     )
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = Feedback
+        fields = ['name', 'email', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'animate__animated animate__fadeInRight border-2 border-[#60B0E5] focus:border-[#372B82] rounded-lg p-3 w-full transition-colors',
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'animate__animated animate__fadeInRight border-2 border-[#60B0E5] focus:border-[#372B82] rounded-lg p-3 w-full transition-colors',
+            }),
+            'message': forms.Textarea(attrs={
+                'class': 'animate__animated animate__fadeInRight border-2 border-[#60B0E5] focus:border-[#372B82] rounded-lg p-3 w-full h-32 transition-colors',
+                'rows': 5
+            }),
+        }

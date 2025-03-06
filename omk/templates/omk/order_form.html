@@ -1,68 +1,73 @@
-{% extends 'base.html' %}
 
-<!-- ini untuk header nya, mungkin bisa nnt kamu pindahkan -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+{% extends 'base.html' %}
+{% load static %}
 
 {% block extra_css %}
-<!-- pake css standart aja :v  -->
 <style>
+  /* Map Container */
   #map {
     height: 400px !important;
     width: 100% !important;
     z-index: 1;
     border-radius: 1.5rem;
     margin-bottom: 2rem;
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(96, 176, 229, 0.2); /* menggunakan #60B0E5 */
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
   }
 
+  /* Responsive adjustment for mobile devices */
+  @media (max-width: 640px) {
+    #map {
+      height: 300px !important;
+      border-radius: 1rem;
+    }
+  }
+
+  /* Informasi Rute */
   .route-info {
     background: white;
     padding: 1.5rem;
-    border: 1px solid rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(96, 176, 229, 0.1);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
     border-radius: 1.5rem;
     margin-bottom: 2rem;
-    border-left: 4px solid #6366f1;
+    border-left: 4px solid #60B0E5;
   }
-
   .route-info i {
-    color: #6366f1;
+    color: #60B0E5;
     margin-right: 0.5rem;
   }
 
+  /* Hasil Pencarian Lokasi */
   .search-results {
     position: absolute;
     background: white;
-    border: 1px solid rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(96, 176, 229, 0.1);
     border-radius: 1rem;
     max-height: 200px;
     overflow-y: auto;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     width: 100%;
     z-index: 1000;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     margin-top: 0.25rem;
   }
-
   .search-result-item {
     padding: 0.75rem 1rem;
     cursor: pointer;
     transition: all 0.2s;
   }
-
   .search-result-item:hover {
     background-color: #f9fafb;
-    color: #4338ca;
+    color: #372B82;
   }
 
+  /* Tombol Lokasi Saat Ini */
   .current-location-btn {
     position: absolute;
     right: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
-    background: #3B82F6;
+    background: #60B0E5;
     color: white;
     border: none;
     border-radius: 50%;
@@ -74,29 +79,26 @@
     justify-content: center;
     transition: all 0.2s;
   }
-
   .current-location-btn:hover {
-    background: #2563EB;
+    background: #4A90D6;
   }
 
+  /* Form dan Map Fullscreen */
   .form-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
   }
-
   .form-section {
     background: white;
     padding: 2rem;
     border-radius: 0.75rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
-
   .form-header {
     text-align: center;
     margin-bottom: 2rem;
   }
-  
   .map-fullscreen {
     position: fixed !important;
     top: 0;
@@ -106,7 +108,6 @@
     z-index: 9999;
     border-radius: 0 !important;
   }
-  
   .exit-fullscreen {
     position: fixed;
     top: 20px;
@@ -116,7 +117,7 @@
     border-radius: 50%;
     padding: 10px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(96, 176, 229, 0.1);
   }
 </style>
 {% endblock %}
@@ -125,9 +126,10 @@
 <div class="min-h-screen bg-gray-50 py-12">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header Section -->
-    <section class="py-16 bg-gradient-to-r from-indigo-600 to-pink-500 text-white rounded-xl shadow-soft-lg" data-aos="fade-down">
+    <section class="py-16 bg-gradient-to-r from-[#60B0E5] to-[#372B82] text-white rounded-xl shadow-soft-lg" data-aos="fade-down">
       <div class="container mx-auto px-4 text-center">
-        <h1 class="soft-title animate__animated animate__fadeInDown mb-4">Pesan Perjalananmu <span class="text-white font-bold">Sekarang</span>
+        <h1 class="soft-title animate__animated animate__fadeInDown mb-4">
+          Pesan Perjalananmu <span class="text-white font-bold">Sekarang</span>
         </h1>
         <p class="mt-4 text-lg md:text-xl animate__animated animate__fadeInDown animate__delay-1s opacity-90">
           Isi formulir di bawah untuk memesan perjalanan dengan driver mahasiswa
@@ -135,7 +137,7 @@
       </div>
     </section>
 
-    <!--  Order Form Section -->
+    <!-- Order Form Section -->
     <div class="bg-white rounded-xl shadow-soft-lg p-6 md:p-8 mt-8">
       <form method="post" id="orderForm">
         {% csrf_token %}
@@ -143,28 +145,54 @@
         <!-- Map Container -->
         <div class="w-full rounded-3xl overflow-hidden shadow-soft-lg mb-8 relative">
           <div id="map" class="w-full h-96 z-0"></div>
-          <div class="absolute inset-0 pointer-events-none rounded-3xl border border-indigo-100 border-opacity-50 shadow-inner"></div>
+          <div class="absolute inset-0 pointer-events-none rounded-3xl border border-[#60B0E5] border-opacity-50 shadow-inner"></div>
           <div class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-soft-lg z-10">
-            <button type="button" id="mapFullScreen" class="text-indigo-600 hover:text-indigo-800 focus:outline-none transition-all duration-300">
+            <button type="button" id="mapFullScreen" class="text-[#60B0E5] hover:text-[#372B82] focus:outline-none transition-all duration-300">
               <i class="fas fa-expand"></i>
             </button>
           </div>
         </div>
 
         <!-- Route Info -->
-        <div id="routeInfo" class="hidden bg-gradient-to-r from-indigo-50 to-pink-50 border border-indigo-100 rounded-3xl shadow-soft p-6 mb-8">
-          <h3 class="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-500 mb-3">Informasi Rute:</h3>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="flex items-center">
-              <i class="fas fa-road text-accent-500 mr-2"></i>
-              <span>Jarak: <span id="routeDistance" class="font-medium">-</span> km</span>
-            </div>
-            <div class="flex items-center">
-              <i class="fas fa-clock text-accent-500 mr-2"></i>
-              <span>Waktu: <span id="routeDuration" class="font-medium">-</span> menit </span>  <span>Estimasi Harga: Rp <span id="routePrice" class="font-medium">0</span>
-            </div>
-          </div>
-        </div>
+
+<div id="routeInfo" class="hidden bg-gradient-to-r from-blue-50 to-blue-50 border border-[#60B0E5] rounded-3xl shadow-soft p-6 mb-8">
+  <h3 class="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#60B0E5] to-[#372B82] mb-3">
+    Informasi Rute:
+  </h3>
+  <!-- Desktop Layout: Semua informasi sejajar dalam satu baris -->
+  <div class="hidden md:flex md:justify-around md:items-center">
+    <div class="flex items-center">
+      <i class="fas fa-road text-[#60B0E5] mr-2"></i>
+      <span>Jarak: <span id="routeDistance" class="font-medium">-</span> km</span>
+    </div>
+    <div class="flex items-center">
+      <i class="fas fa-clock text-[#60B0E5] mr-2"></i>
+      <span>Waktu: <span id="routeDuration" class="font-medium">-</span> menit</span>
+    </div>
+    <div class="flex items-center">
+      <i class="fas fa-tag text-[#60B0E5] mr-2"></i>
+      <span>Estimasi Harga: Rp <span id="routePrice" class="font-medium">0</span></span>
+    </div>
+  </div>
+  
+  <!-- Mobile Layout: Baris pertama menampilkan jarak dan waktu, baris kedua untuk estimasi harga -->
+  <div class="flex flex-col space-y-2 md:hidden">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fas fa-road text-[#60B0E5] mr-2"></i>
+        <span>Jarak: <span id="routeDistanceMobile" class="font-medium">-</span> km</span>
+      </div>
+      <div class="flex items-center">
+        <i class="fas fa-clock text-[#60B0E5] mr-2"></i>
+        <span>Waktu: <span id="routeDurationMobile" class="font-medium">-</span> menit</span>
+      </div>
+    </div>
+    <div class="flex items-center">
+      <i class="fas fa-tag text-[#60B0E5] mr-2"></i>
+      <span>Estimasi Harga: Rp <span id="routePriceMobile" class="font-medium">0</span></span>
+    </div>
+  </div>
+</div>
 
         <!-- Form Fields -->
         <div class="space-y-6">
@@ -178,7 +206,9 @@
             <p class="mt-1 text-sm text-red-600">{{ form.customer_name.errors.0 }}</p>
             {% endif %}
           </div>
-          <p class="text-sm text-gray-600 border-l-2 border-indigo-500 pl-2 py-1 bg-indigo-50 rounded-r-lg">Note: Jika tidak menemukan lokasi & tujuan Anda harap isi manual</p>
+          <p class="text-sm text-gray-600 border-l-2 border-[#60B0E5] pl-2 py-1 bg-blue-50 rounded-r-lg">
+            Note: Jika tidak menemukan lokasi & tujuan Anda, harap isi manual
+          </p>
           <!-- Lokasi -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="relative">
@@ -188,13 +218,12 @@
               <div class="relative">
                 {{ form.firstLocation.as_widget|safe }}
                 <button type="button" id="useCurrentLocation"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition-all duration-200 shadow-sm"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-[#60B0E5] hover:bg-[#4A90D6] text-white rounded-full transition-all duration-200 shadow-sm"
                   title="Gunakan lokasi saat ini">
                   <i class="fas fa-crosshairs"></i>
                 </button>
               </div>
-              <div id="startLocationResults"
-                class="hidden absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-soft max-h-48 overflow-y-auto z-50"></div>
+              <div id="startLocationResults" class="hidden absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-soft max-h-48 overflow-y-auto z-50"></div>
               {% if form.firstLocation.errors %}
               <p class="mt-1 text-sm text-red-600">{{ form.firstLocation.errors.0 }}</p>
               {% endif %}
@@ -205,8 +234,7 @@
                 {{ form.lastLocation.label }}
               </label>
               {{ form.lastLocation.as_widget|safe }}
-              <div id="endLocationResults"
-                class="hidden absolute w-full mt-1 bg-white rounded-lg shadow-lg max-h-48 overflow-y-auto z-50"></div>
+              <div id="endLocationResults" class="hidden absolute w-full mt-1 bg-white rounded-lg shadow-lg max-h-48 overflow-y-auto z-50"></div>
               {% if form.lastLocation.errors %}
               <p class="mt-1 text-sm text-red-600">{{ form.lastLocation.errors.0 }}</p>
               {% endif %}
@@ -228,7 +256,6 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Jemput</label>
             <div class="relative">
               {{ form.pickup_time.as_widget|safe }}
-              <!--<i class="fas fa-clock absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-500"></i>-->
             </div>
           </div>
           <!-- Pesan Tambahan -->
@@ -243,40 +270,37 @@
           </div>
 
           <!-- Voucher Section -->
-          <div class="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-100 shadow-sm" data-aos="fade-right">
+          <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100 shadow-sm" data-aos="fade-right">
             <div class="flex flex-col md:flex-row md:items-end gap-4">
               <div class="flex-grow">
                 <label for="{{ voucher_form.voucher_code.id_for_label }}" class="block text-gray-700 font-medium mb-2">
                   <span class="flex items-center">
-                    <i class="fas fa-ticket-alt text-indigo-500 mr-2"></i>
+                    <i class="fas fa-ticket-alt text-[#60B0E5] mr-2"></i>
                     Kode Voucher (Opsional)
                   </span>
                 </label>
                 {{ voucher_form.voucher_code.as_widget|safe }}
               </div>
               <button type="button" id="checkVoucher"
-                class="bg-gradient-to-r from-indigo-600 to-pink-500 text-white text-sm px-4 py-2 rounded-xl shadow-soft hover:shadow-soft-lg transition-all duration-300 transform hover:-translate-y-1">
+                class="bg-gradient-to-r from-[#60B0E5] to-[#372B82] text-white text-sm px-4 py-2 rounded-xl shadow-soft hover:shadow-soft-lg transition-all duration-300 transform hover:-translate-y-1">
                 Cek Voucher
               </button>
             </div>
             <div id="voucherResult" class="mt-2 hidden p-2 rounded-lg text-sm font-medium"></div>
           </div>
  
-         <!-- Di dalam form di order_form.html -->
-         <input type="hidden" name="distance" id="id_distance">
-          <div class="mt-4 bg-gradient-to-r from-indigo-50 to-pink-50 p-5 rounded-2xl border border-indigo-100 shadow-soft">
+          <!-- Informasi tambahan -->
+          <input type="hidden" name="distance" id="id_distance">
+          <div class="mt-4 bg-gradient-to-r from-blue-50 to-blue-50 p-5 rounded-2xl border border-blue-100 shadow-soft">
             <p class="text-gray-800 text-sm">
-              <i class="fas fa-info-circle text-indigo-600 mr-2"></i>
+              <i class="fas fa-info-circle text-[#60B0E5] mr-2"></i>
               Harap sertakan tautan lokasi (Share Location) melalui WhatsApp, baik lokasi tersedia maupun tidak di sistem kami. 
-              Hal ini bertujuan untuk memastikan akurasi perhitungan biaya, terutama jika lokasi telah terdaftar di Google Maps.
+              Hal ini untuk memastikan akurasi perhitungan biaya, terutama jika lokasi telah terdaftar di Google Maps.
             </p>
           </div>
           <!-- Submit Button -->
           <div class="flex justify-center pt-4">
-            <button type="submit" class="w-full md:w-auto px-8 py-3 rounded-xl
-                                       bg-gradient-to-r from-indigo-600 to-pink-500 text-white font-medium
-                                       focus:ring-2 focus:ring-indigo-200 focus:ring-offset-2 transition-all duration-300 disabled:opacity-50
-                                       disabled:cursor-not-allowed shadow-soft hover:shadow-soft-lg transform hover:-translate-y-1">
+            <button type="submit" class="w-full md:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-[#60B0E5] to-[#372B82] text-white font-medium focus:ring-2 focus:ring-[#60B0E5] focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-soft hover:shadow-soft-lg transform hover:-translate-y-1">
               <i class="fas fa-motorcycle mr-2"></i> Pesan Sekarang
             </button>
           </div>
@@ -285,7 +309,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Search Result Item Template -->
 <template id="search-result-template">
@@ -298,22 +321,17 @@
 {% block extra_js %}
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-
-    // script punya mu disini
+    // Voucher checking
     const checkVoucherBtn = document.getElementById('checkVoucher');
-    // Menggunakan auto_id untuk memastikan mendapatkan id input voucher yang benar
     const voucherCodeInput = document.getElementById('{{ voucher_form.voucher_code.auto_id }}');
     const voucherResult = document.getElementById('voucherResult');
 
     checkVoucherBtn.addEventListener('click', function () {
       const voucherCode = voucherCodeInput.value.trim();
-
       if (!voucherCode) {
         showVoucherResult('Masukkan kode voucher terlebih dahulu', false);
         return;
       }
-
-      // Request AJAX untuk cek voucher
       fetch('{% url "omk:check_voucher" %}', {
         method: 'POST',
         headers: {
@@ -344,21 +362,12 @@
       voucherResult.classList.add(isValid ? 'text-green-600' : 'text-red-600', 'animate__animated', 'animate__fadeIn');
     }
 
-    /* 
-    Script punya ku disini 
-    mungkin banyak kendala dan tidak rapih 
-    */
-
+    /* Pemetaan dan rute */
     let map, userLocation;
-    let markers = {
-      start: null,
-      end: null
-    };
+    let markers = { start: null, end: null };
     let routeLayer = null;
 
-    // Inisialisasi map
     map = L.map('map').setView([-7.9666, 112.6326], 13);
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
@@ -368,7 +377,6 @@
       iconSize: [25, 41],
       iconAnchor: [12, 41]
     });
-
     const endIcon = L.icon({
       iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
       iconSize: [25, 41],
@@ -379,24 +387,18 @@
     const debounce = (func, wait) => {
       let timeout;
       return function executedFunction(...args) {
-        const later = () => {
-          clearTimeout(timeout);
-          func(...args);
-        };
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(() => func(...args), wait);
       };
     };
 
-    // Fungsi pencarian lokasi
+    // Pencarian lokasi dengan Nominatim
     async function searchLocation(query) {
       try {
         let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=id`;
-
         if (userLocation) {
           url += `&viewbox=${userLocation.lon - 0.1},${userLocation.lat - 0.1},${userLocation.lon + 0.1},${userLocation.lat + 0.1}`;
         }
-
         const response = await fetch(url);
         return await response.json();
       } catch (error) {
@@ -405,22 +407,16 @@
       }
     }
 
-    // Setup pencarian lokasi
     ['start', 'end'].forEach(type => {
-      const locationInput = type === 'start' ?
-        document.getElementById('id_firstLocation') :
-        document.getElementById('id_lastLocation');
+      const locationInput = type === 'start' ? document.getElementById('id_firstLocation') : document.getElementById('id_lastLocation');
       const resultsDiv = document.getElementById(`${type}LocationResults`);
-
       const debouncedSearch = debounce(async (query) => {
         if (query.length < 3) {
           resultsDiv.classList.add('hidden');
           return;
         }
-
         const results = await searchLocation(query);
         resultsDiv.innerHTML = '';
-
         results.forEach(result => {
           const div = document.createElement('div');
           div.className = 'search-result-item';
@@ -428,26 +424,16 @@
           div.addEventListener('click', () => {
             locationInput.value = result.display_name;
             resultsDiv.classList.add('hidden');
-
             const latlng = L.latLng(result.lat, result.lon);
-            if (markers[type]) {
-              map.removeLayer(markers[type]);
-            }
-            markers[type] = L.marker(latlng, {
-              icon: type === 'start' ? startIcon : endIcon
-            }).addTo(map);
-
+            if (markers[type]) map.removeLayer(markers[type]);
+            markers[type] = L.marker(latlng, { icon: type === 'start' ? startIcon : endIcon }).addTo(map);
             updateRoute();
           });
           resultsDiv.appendChild(div);
         });
-
         resultsDiv.classList.remove('hidden');
       }, 500);
-
       locationInput.addEventListener('input', (e) => debouncedSearch(e.target.value));
-
-      // Hide results when clicking outside
       document.addEventListener('click', (e) => {
         if (!locationInput.contains(e.target) && !resultsDiv.contains(e.target)) {
           resultsDiv.classList.add('hidden');
@@ -455,50 +441,31 @@
       });
     });
 
-    // Fungsi untuk mendapatkan lokasi saat ini
+    // Mendapatkan lokasi saat ini
     async function getCurrentLocation() {
       try {
         const position = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
         });
-
         const { latitude, longitude } = position.coords;
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-        );
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
         const data = await response.json();
-
-        return {
-          lat: latitude,
-          lon: longitude,
-          address: data.display_name
-        };
+        return { lat: latitude, lon: longitude, address: data.display_name };
       } catch (error) {
         console.error('Error:', error);
         throw error;
       }
     }
 
-    // Update UI dengan lokasi
     async function updateLocationUI(location) {
       const firstLocationInput = document.getElementById('id_firstLocation');
       firstLocationInput.value = location.address;
-
-      if (markers.start) {
-        map.removeLayer(markers.start);
-      }
-      markers.start = L.marker([location.lat, location.lon], {
-        icon: startIcon
-      }).addTo(map);
-
+      if (markers.start) map.removeLayer(markers.start);
+      markers.start = L.marker([location.lat, location.lon], { icon: startIcon }).addTo(map);
       map.setView([location.lat, location.lon], 15);
-
-      if (markers.end) {
-        updateRoute();
-      }
+      if (markers.end) updateRoute();
     }
 
-    // Event listener untuk tombol lokasi saat ini
     document.getElementById('useCurrentLocation').addEventListener('click', async () => {
       try {
         const location = await getCurrentLocation();
@@ -508,7 +475,6 @@
       }
     });
 
-    // Fungsi update rute
     async function updateRoute() {
       if (markers.start && markers.end) {
         try {
@@ -518,44 +484,37 @@
             `&start=${markers.start.getLatLng().lng},${markers.start.getLatLng().lat}` +
             `&end=${markers.end.getLatLng().lng},${markers.end.getLatLng().lat}`
           );
-
           const data = await response.json();
-
-          if (routeLayer) {
-            map.removeLayer(routeLayer);
-          }
-
+          if (routeLayer) map.removeLayer(routeLayer);
           const coordinates = data.features[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
-          routeLayer = L.polyline(coordinates, {
-            color: '#3B82F6',
-            weight: 4
-          }).addTo(map);
-
+          routeLayer = L.polyline(coordinates, { color: '#3B82F6', weight: 4 }).addTo(map);
           const distance = data.features[0].properties.segments[0].distance;
           const duration = data.features[0].properties.segments[0].duration;
-
-          // Menampilkan jarak di console
           console.log('Jarak Rute:', (distance / 1000).toFixed(2), 'km');
           console.log('Waktu Tempuh:', Math.round(duration / 60), 'menit');
-          console.log('Data Rute Lengkap:', data.features[0].properties.segments[0]);
-
-
           document.getElementById('routeInfo').classList.remove('hidden');
-          document.getElementById('routeDistance').textContent = (distance / 1000).toFixed(2);
-          document.getElementById('routeDuration').textContent = Math.round(duration / 60);
-          document.getElementById('id_distance').value = (distance / 1000).toFixed(2);
           
-          const distance_km = parseFloat((distance / 1000).toFixed(2));
+          // Update desktop layout
+          const distanceText = (distance / 1000).toFixed(2);
+          const durationText = Math.round(duration / 60);
+          const distance_km = parseFloat(distanceText);
           let harga = 8500;
-          if(distance_km > 4) {
+          if (distance_km > 4) {
             const additionalKm = Math.ceil(distance_km - 4);
             harga += additionalKm * 2125;
           }
-          // Update UI
-          document.getElementById('routePrice').textContent = harga.toLocaleString('id-ID');
-          document.getElementById('id_distance').value = distance_km;
-
-
+          const priceText = harga.toLocaleString('id-ID');
+          
+          document.getElementById('routeDistance').textContent = distanceText;
+          document.getElementById('routeDuration').textContent = durationText;
+          document.getElementById('routePrice').textContent = priceText;
+          
+          // Update mobile layout
+          document.getElementById('routeDistanceMobile').textContent = distanceText;
+          document.getElementById('routeDurationMobile').textContent = durationText;
+          document.getElementById('routePriceMobile').textContent = priceText;
+          
+          document.getElementById('id_distance').value = distanceText;
           map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
         } catch (error) {
           console.error('Error getting route:', error);
@@ -568,30 +527,17 @@
     const mapContainer = document.getElementById('map');
     const mapFullScreenBtn = document.getElementById('mapFullScreen');
     let isFullScreen = false;
-    
     mapFullScreenBtn.addEventListener('click', function() {
       if (!isFullScreen) {
-        // Enter fullscreen
         mapContainer.classList.add('map-fullscreen');
         mapFullScreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
         mapFullScreenBtn.classList.add('exit-fullscreen');
-        setTimeout(() => {
-          map.invalidateSize();
-          if (routeLayer) {
-            map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
-          }
-        }, 100);
+        setTimeout(() => { map.invalidateSize(); if (routeLayer) map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] }); }, 100);
       } else {
-        // Exit fullscreen
         mapContainer.classList.remove('map-fullscreen');
         mapFullScreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
         mapFullScreenBtn.classList.remove('exit-fullscreen');
-        setTimeout(() => {
-          map.invalidateSize();
-          if (routeLayer) {
-            map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
-          }
-        }, 100);
+        setTimeout(() => { map.invalidateSize(); if (routeLayer) map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] }); }, 100);
       }
       isFullScreen = !isFullScreen;
     });
@@ -600,7 +546,6 @@
     document.getElementById('orderForm').addEventListener('submit', function (e) {
       const firstLocation = document.getElementById('id_firstLocation').value;
       const lastLocation = document.getElementById('id_lastLocation').value;
-
       if (!firstLocation || !lastLocation) {
         e.preventDefault();
         alert('Silakan pilih lokasi penjemputan dan tujuan');

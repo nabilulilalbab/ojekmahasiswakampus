@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="bg-gradient-to-b from-[#E8F4FC] to-white py-16 min-h-screen" data-aos="fade-up">
+  <div class="container mx-auto px-4 max-w-2xl">
+    <!-- Decorative elements -->
+    <div class="absolute top-0 right-0 w-64 h-64 bg-[#60B0E5] opacity-5 rounded-full -translate-x-16 -translate-y-24"></div>
+    <div class="absolute bottom-0 left-0 w-80 h-80 bg-[#372B82] opacity-5 rounded-full translate-x-8 translate-y-32"></div>
+    
+    <div class="bg-white rounded-3xl shadow-lg p-8 md:p-12" data-aos="zoom-in">
+      <h1 class="text-3xl font-bold text-[#372B82] mb-8 text-center animate__animated animate__fadeInDown">
+        Kotak Kritik & Saran
+      </h1>
+      
+      <form method="post">
+        {% csrf_token %}
+        
+        <div class="space-y-6">
+          <div data-aos="fade-right" data-aos-delay="200">
+            <label class="block text-[#372B82] mb-2 font-medium animate__animated animate__fadeInLeft">
+              Nama
+            </label>
+            {{ form.name }}
+          </div>
+          
+          <div data-aos="fade-left" data-aos-delay="300">
+            <label class="block text-[#372B82] mb-2 font-medium animate__animated animate__fadeInLeft">
+              Email
+            </label>
+            {{ form.email }}
+          </div>
+          
+          <div data-aos="fade-right" data-aos-delay="400">
+            <label class="block text-[#372B82] mb-2 font-medium animate__animated animate__fadeInLeft">
+              Pesan Anda
+            </label>
+            {{ form.message }}
+          </div>
+          
+          <button type="submit" 
+                  class="w-full bg-gradient-to-r from-[#60B0E5] to-[#372B82] text-white py-4 px-8 rounded-lg font-bold hover:from-[#372B82] hover:to-[#60B0E5] transition-all shadow-lg hover:shadow-xl animate__animated animate__fadeInUp animate__delay-1s"
+                  data-aos="flip-up"
+                  data-aos-delay="500">
+            Kirim Feedback
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

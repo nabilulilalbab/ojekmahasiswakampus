@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
@@ -19,6 +20,7 @@
   <meta name="twitter:card" content="summary_large_image">
 
   <title>OMK - Ojek Mahasiswa Kampus</title>
+  <link rel="icon" type="image/svg" href="{% static 'images/logo.svg' %}">
   <!-- Preload resources penting -->
   <link rel="preload" href="{% static 'src/output.css' %}" as="style">
   <link rel="preload" href="{% static 'images/logo.svg' %}" as="image">
@@ -43,6 +45,9 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
+    /* Aturan untuk x-cloak agar elemen tidak muncul sebelum Alpine.js aktif */
+    [x-cloak] { display: none !important; }
+    
     body {
       font-family: 'Poppins', sans-serif;
       scroll-behavior: smooth;
@@ -76,30 +81,36 @@
   <header x-data="{ open: false }" class="glass-effect sticky top-0 z-50 animate__animated animate__fadeInDown bg-white bg-opacity-90 backdrop-blur-lg shadow-soft-lg" aria-label="Header utama">
     <div class="container mx-auto px-6 py-5 flex items-center justify-between">
       <a href="{% url 'omk:home' %}" class="flex items-center space-x-3">
-  <!-- Logo SVG yang diperbesar -->
-  <img
-    src="{% static 'images/logo.svg' %}"
-    alt="OMK Logo"
-    class="h-12 w-auto transition-all duration-300 hover:scale-105 flex-shrink-0 filter drop-shadow-md"
-  >
-  <span class="text-2xl font-semibold text-gray-900 hidden md:block font-display">
-    <span class="bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent">OMK</span>
-  </span>
-</a>
+        <!-- Logo SVG yang diperbesar -->
+        <img
+          src="{% static 'images/logo.svg' %}"
+          alt="OMK Logo"
+          class="h-12 w-auto transition-all duration-300 hover:scale-105 flex-shrink-0 filter drop-shadow-md"
+        >
+        <!-- Teks OMK selalu tampil di samping logo -->
+        <span class="text-2xl font-semibold text-gray-900 font-display">
+          <span class="bg-gradient-to-r from-[#60B0E5] to-[#372B82] bg-clip-text text-transparent">OMK</span>
+        </span>
+      </a>
       <nav class="hidden md:flex space-x-8 items-center" aria-label="Navigasi utama">
         <a href="{% url 'omk:home' %}" class="soft-nav-link text-base font-medium" aria-current="page">Beranda</a>
-        <a href="{% url 'omk:order_create' %}" class="btn-primary text-sm px-6 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-indigo-600 to-pink-500">Pesan Sekarang</a>
+        <a href="{% url 'omk:kalkulator' %}" class="soft-nav-link text-base font-medium" aria-current="page">Calculate Cost</a>
+        <a href="{% url 'omk:feedback' %}" class="soft-nav-link text-base font-medium" aria-current="page">Feedback</a>
+        <a href="{% url 'omk:order_create' %}" class="btn-primary text-sm px-6 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-[#60B0E5] to-[#372B82]">Pesan Sekarang</a>
       </nav>
       <!-- Mobile Menu Button -->
-      <button @click="open = !open" class="md:hidden text-indigo-600 focus:outline-none" :aria-expanded="open" aria-label="Toggle navigasi mobile">
+      <button @click="open = !open" class="md:hidden text-[#60B0E5] focus:outline-none" :aria-expanded="open" aria-label="Toggle navigasi mobile">
         <i class="fas fa-bars text-2xl"></i>
       </button>
     </div>
     <!-- Mobile Menu -->
-    <div x-show="open" class="md:hidden bg-white bg-opacity-95 backdrop-blur-md border-t border-gray-100" x-cloak>
+    <div x-show="open" x-transition x-cloak class="md:hidden bg-white bg-opacity-95 backdrop-blur-md border-t border-gray-100">
       <nav class="px-6 pt-4 pb-6 space-y-4">
+        <!-- Pada mobile menu, logo dan teks OMK sudah tampil di header sehingga tidak perlu ditampilkan ulang -->
         <a href="{% url 'omk:home' %}" class="block soft-nav-link py-3 text-center text-base font-medium">Beranda</a>
-        <a href="{% url 'omk:order_create' %}" class="block btn-primary rounded-full text-sm px-5 py-3.5 text-center w-full shadow-md bg-gradient-to-r from-indigo-600 to-pink-500">Pesan Sekarang</a>
+        <a href="{% url 'omk:kalkulator' %}" class="block soft-nav-link py-3 text-center text-base font-medium">Calculate Cost</a>
+        <a href="{% url 'omk:feedback' %}" class="block soft-nav-link py-3 text-center text-base font-medium">Feedback</a>
+        <a href="{% url 'omk:order_create' %}" class="block btn-primary rounded-full text-sm px-5 py-3.5 text-center w-full shadow-md bg-gradient-to-r from-[#60B0E5] to-[#372B82]">Pesan Sekarang</a>
       </nav>
     </div>
   </header>
@@ -109,86 +120,83 @@
     {% block content %}{% endblock %}
   </main>
 
-<!-- Footer -->
-<footer class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-12 rounded-t-xl shadow-soft-lg mt-12" role="contentinfo" itemscope itemtype="https://schema.org/LocalBusiness">
-  <div class="container mx-auto px-4">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Bagian Tentang OMK -->
-      <div class="lg:max-w-xs" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-        <h4 class="text-xl font-bold mb-4" itemprop="name">OMK</h4>
-        <p class="text-white text-opacity-80 leading-relaxed" itemprop="description">
-          Platform ojek mahasiswa dengan harga terjangkau dan privasi terjamin. Layanan operasional 24 jam untuk mendukung mobilitas kampus Anda.
-        </p>
-        <meta itemprop="streetAddress" content="Jl. Sidodadi Timur No. 24 (Depan Kampus PGRI)">
-        <meta itemprop="addressLocality" content="Semarang">
-        <meta itemprop="addressRegion" content="Jawa Tengah">
-        <meta itemprop="postalCode" content="50232">
-        <meta itemprop="addressCountry" content="Indonesia">
-        <meta itemprop="openingHours" content="Mo-Su 00:00-23:59">
-        <meta itemprop="priceRange" content="Rp 5.000 - Rp 25.000">
-      </div>
+  <!-- Footer -->
+  <footer class="bg-gradient-to-r from-[#372B82] to-[#60B0E5] text-white py-12 rounded-t-xl shadow-soft-lg mt-12" role="contentinfo" itemscope itemtype="https://schema.org/LocalBusiness">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Bagian Tentang OMK -->
+        <div class="lg:max-w-xs" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+          <h4 class="text-xl font-bold mb-4" itemprop="name">OMK</h4>
+          <p class="text-white text-opacity-80 leading-relaxed" itemprop="description">
+            Platform ojek mahasiswa dengan harga terjangkau dan privasi terjamin. Layanan operasional 24 jam untuk mendukung mobilitas kampus Anda.
+          </p>
+          <meta itemprop="streetAddress" content="Jl. Sidodadi Timur No. 24 (Depan Kampus PGRI)">
+          <meta itemprop="addressLocality" content="Semarang">
+          <meta itemprop="addressRegion" content="Jawa Tengah">
+          <meta itemprop="postalCode" content="50232">
+          <meta itemprop="addressCountry" content="Indonesia">
+          <meta itemprop="openingHours" content="Mo-Su 00:00-23:59">
+          <meta itemprop="priceRange" content="Rp 5.000 - Rp 25.000">
+        </div>
 
-      <!-- Bagian Kontak -->
-      <div class="lg:max-w-xs">
-        <h4 class="text-xl font-bold mb-4">Kontak</h4>
-        <div class="space-y-3" itemprop="contactPoint" itemscope itemtype="https://schema.org/ContactPoint">
-          <p class="flex items-start text-white text-opacity-80" itemprop="email">
-            <i class="fas fa-envelope mr-2 mt-1 flex-shrink-0"></i>
-            <span class="break-words whitespace-normal">
-              ojekmahasiswakampus@gmail.com
-            </span>
-          </p>
-          <p class="flex items-center text-white text-opacity-80" itemprop="telephone">
-            <i class="fas fa-phone mr-2 flex-shrink-0"></i>
-            +62 8820-0880-9231
-          </p>
-          <div itemprop="areaServed" itemscope itemtype="https://schema.org/AdministrativeArea">
-            <meta itemprop="name" content="Semarang">
-            <meta itemprop="description" content="Wilayah layanan: Kampus PGRI, Sekaran, Gunung Pati, dan sekitarnya">
+        <!-- Bagian Kontak -->
+        <div class="lg:max-w-xs">
+          <h4 class="text-xl font-bold mb-4">Kontak</h4>
+          <div class="space-y-3" itemprop="contactPoint" itemscope itemtype="https://schema.org/ContactPoint">
+            <p class="flex items-start text-white text-opacity-80" itemprop="email">
+              <i class="fas fa-envelope mr-2 mt-1 flex-shrink-0"></i>
+              <span class="break-words whitespace-normal">
+                ojekmahasiswakampus@gmail.com
+              </span>
+            </p>
+            <p class="flex items-center text-white text-opacity-80" itemprop="telephone">
+              <i class="fas fa-phone mr-2 flex-shrink-0"></i>
+              +62 8820-0880-9231
+            </p>
+            <div itemprop="areaServed" itemscope itemtype="https://schema.org/AdministrativeArea">
+              <meta itemprop="name" content="Semarang">
+              <meta itemprop="description" content="Wilayah layanan: Kampus PGRI, Sekaran, Gunung Pati, dan sekitarnya">
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Bagian Media Sosial -->
-      <div class="md:col-span-2 lg:col-span-1">
-        <h4 class="text-xl font-bold mb-4">Ikuti Kami</h4>
-        <div class="flex flex-wrap gap-4" itemprop="sameAs">
-          <a href="https://www.instagram.com/ojekmahasiswakampus/"
-             class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
-            <i class="fab fa-instagram text-2xl"></i>
-            <span class="sr-only">Instagram</span>
-          </a>
-          <a href="https://twitter.com/omk_semarang"
-             class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
-            <i class="fab fa-twitter text-2xl"></i>
-            <span class="sr-only">Twitter</span>
-          </a>
-          <a href="https://www.tiktok.com/@ojek.mahasiswa.ka"
-             class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
-            <i class="fab fa-tiktok text-2xl"></i>
-            <span class="sr-only">TikTok</span>
-          </a>
+        <!-- Bagian Media Sosial -->
+        <div class="md:col-span-2 lg:col-span-1">
+          <h4 class="text-xl font-bold mb-4">Ikuti Kami</h4>
+          <div class="flex flex-wrap gap-4" itemprop="sameAs">
+            <a href="https://www.instagram.com/ojekmahasiswakampus/" class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
+              <i class="fab fa-instagram text-2xl"></i>
+              <span class="sr-only">Instagram</span>
+            </a>
+            <a href="https://twitter.com/omk_semarang" class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
+              <i class="fab fa-twitter text-2xl"></i>
+              <span class="sr-only">Twitter</span>
+            </a>
+            <a href="https://www.tiktok.com/@ojek.mahasiswa.ka" class="text-white text-opacity-80 hover:text-white hover:text-opacity-100 transition-transform hover:scale-110">
+              <i class="fab fa-tiktok text-2xl"></i>
+              <span class="sr-only">TikTok</span>
+            </a>
+          </div>
+          <meta itemprop="image" content="{% static 'images/logo.svg' %}">
+          <meta itemprop="url" content="https://ojekmahasiswakampus.biz.id">
         </div>
-        <meta itemprop="image" content="{% static 'images/logo.svg' %}">
-        <meta itemprop="url" content="https://ojekmahasiswakampus.biz.id">
       </div>
-    </div>
 
-    <!-- Copyright -->
-    <div class="mt-8 pt-8 border-t border-white border-opacity-10 text-center text-white text-opacity-80">
-      <p class="text-sm md:text-base">
-        &copy; {% now "Y" %} OMK. Hak Cipta Dilindungi.<br class="md:hidden">
-        <span class="hidden md:inline">•</span>
-        <span class="block md:inline mt-1 md:mt-0">
-          Layanan berlisensi di bawah Kementerian Perhubungan RI
-        </span>
-      </p>
-      <div itemprop="founder" itemscope itemtype="https://schema.org/Person">
-        <meta itemprop="name" content="Tim Mahasiswa PGRI Semarang">
+      <!-- Copyright -->
+      <div class="mt-8 pt-8 border-t border-white border-opacity-10 text-center text-white text-opacity-80">
+        <p class="text-sm md:text-base">
+          &copy; {% now "Y" %} OMK. Hak Cipta Dilindungi.<br class="md:hidden">
+          <span class="hidden md:inline">•</span>
+          <span class="block md:inline mt-1 md:mt-0">
+            Layanan berlisensi di bawah Kementerian Perhubungan RI
+          </span>
+        </p>
+        <div itemprop="founder" itemscope itemtype="https://schema.org/Person">
+          <meta itemprop="name" content="Tim Mahasiswa PGRI Semarang">
+        </div>
       </div>
     </div>
-  </div>
-</footer>
+  </footer>
 
   <!-- JavaScript libraries -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

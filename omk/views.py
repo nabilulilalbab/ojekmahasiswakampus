@@ -5,9 +5,10 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils import timezone
 from .models import Order, Voucher, Event, BannerEvent
-from .forms import OrderForm, VoucherForm
+from .forms import OrderForm, VoucherForm, FeedbackForm
 from django.conf import settings
 from decimal import Decimal, InvalidOperation
+from django.views import View
 class HomeView(TemplateView):
     template_name = 'omk/home.html'
 
@@ -174,3 +175,54 @@ class CheckVoucherView(FormView):
             'message': 'Form tidak valid'
         })
 
+
+class KalkulatorView(TemplateView):
+    template_name = 'omk/kalkulator.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Kalkulator Ongkos'
+        return context
+
+class CalculateCostAPI(View):
+    def get(self, request):
+        km = request.GET.get('km')
+        try:
+            km = float(km)
+            if km < 0:
+                raise ValueError
+            cost = self.calculate_cost(km)
+            return JsonResponse({
+                'valid': True,
+                'km': km,
+                'cost': cost,
+                'formatted_cost': f"Rp{cost:,.0f}".replace(',', '.')
+            })
+        except (ValueError, TypeError):
+            return JsonResponse({
+                'valid': False,
+                'error': 'Masukkan jarak yang valid (angka positif)'
+            })
+
+    @staticmethod
+    def calculate_cost(km: float) -> float:
+        const_cost = 8500
+        if km <= 4:
+            return const_cost
+        km_dinamis = km - 4
+        return (km_dinamis * 2000) + const_cost
+
+
+
+class FeedbackView(FormView):
+    template_name = 'omk/feedback.html'
+    form_class = FeedbackForm
+    success_url = reverse_lazy('omk:feedback_thanks')
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Terima kasih atas feedback Anda!')
+        return super().form_valid(form)
+
+class FeedbackThanksView(TemplateView):
+    template_name = 'omk/feedback_thanks.html'
