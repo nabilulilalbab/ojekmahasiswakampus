@@ -67,3 +67,4 @@ ufw==0.36.2
 urllib3==2.3.0
 waypaper==2.5
 wheel==0.45.0
+widget-tweaks
