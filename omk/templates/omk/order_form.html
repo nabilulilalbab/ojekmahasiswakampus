@@ -476,53 +476,54 @@
     });
 
     async function updateRoute() {
-      if (markers.start && markers.end) {
-        try {
-          const response = await fetch(
-            `https://api.openrouteservice.org/v2/directions/driving-car?` +
-            `api_key={{ OPENROUTE_API_KEY }}` +
-            `&start=${markers.start.getLatLng().lng},${markers.start.getLatLng().lat}` +
-            `&end=${markers.end.getLatLng().lng},${markers.end.getLatLng().lat}`
-          );
-          const data = await response.json();
-          if (routeLayer) map.removeLayer(routeLayer);
-          const coordinates = data.features[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
-          routeLayer = L.polyline(coordinates, { color: '#3B82F6', weight: 4 }).addTo(map);
-          const distance = data.features[0].properties.segments[0].distance;
-          const duration = data.features[0].properties.segments[0].duration;
-          console.log('Jarak Rute:', (distance / 1000).toFixed(2), 'km');
-          console.log('Waktu Tempuh:', Math.round(duration / 60), 'menit');
-          document.getElementById('routeInfo').classList.remove('hidden');
-          
-          // Update desktop layout
-          const distanceText = (distance / 1000).toFixed(2);
-          const durationText = Math.round(duration / 60);
-          const distance_km = parseFloat(distanceText);
-          let harga = 8500;
-          if (distance_km > 4) {
-            const additionalKm = Math.ceil(distance_km - 4);
-            harga += additionalKm * 2125;
-          }
-          const priceText = harga.toLocaleString('id-ID');
-          
-          document.getElementById('routeDistance').textContent = distanceText;
-          document.getElementById('routeDuration').textContent = durationText;
-          document.getElementById('routePrice').textContent = priceText;
-          
-          // Update mobile layout
-          document.getElementById('routeDistanceMobile').textContent = distanceText;
-          document.getElementById('routeDurationMobile').textContent = durationText;
-          document.getElementById('routePriceMobile').textContent = priceText;
-          
-          document.getElementById('id_distance').value = distanceText;
-          map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
-        } catch (error) {
-          console.error('Error getting route:', error);
-          alert('Gagal mendapatkan rute. Silakan coba lagi.');
-        }
-      }
-    }
+  if (markers.start && markers.end) {
+    try {
+      const response = await fetch(
+        `https://api.openrouteservice.org/v2/directions/driving-car?` +
+        `api_key={{ OPENROUTE_API_KEY }}` +
+        `&start=${markers.start.getLatLng().lng},${markers.start.getLatLng().lat}` +
+        `&end=${markers.end.getLatLng().lng},${markers.end.getLatLng().lat}`
+      );
+      const data = await response.json();
+      if (routeLayer) map.removeLayer(routeLayer);
+      const coordinates = data.features[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
+      routeLayer = L.polyline(coordinates, { color: '#3B82F6', weight: 4 }).addTo(map);
+      const distance = data.features[0].properties.segments[0].distance;
+      const duration = data.features[0].properties.segments[0].duration;
+      
+      // Hitung jarak dalam km
+      const exactDistanceKm = distance / 1000;
+      const distanceText = exactDistanceKm.toFixed(2);
 
+      // Panggil API kalkulasi harga
+      const costResponse = await fetch(`/api/calculate-cost/?km=${exactDistanceKm.toFixed(3)}`);
+      const costData = await costResponse.json();
+
+      if (!costData.valid) {
+        throw new Error(costData.error || 'Gagal menghitung harga');
+      }
+
+      // Update UI dengan data dari API
+      const durationText = Math.round(duration / 60);
+      
+      document.getElementById('routeDistance').textContent = distanceText;
+      document.getElementById('routeDuration').textContent = durationText;
+      document.getElementById('routePrice').textContent = costData.formatted_cost;
+      
+      document.getElementById('routeDistanceMobile').textContent = distanceText;
+      document.getElementById('routeDurationMobile').textContent = durationText;
+      document.getElementById('routePriceMobile').textContent = costData.formatted_cost;
+      
+      document.getElementById('id_distance').value = exactDistanceKm.toFixed(3);
+      document.getElementById('routeInfo').classList.remove('hidden');
+      
+      map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message || 'Terjadi kesalahan saat memproses rute');
+    }
+  }
+}
     // Map Fullscreen functionality
     const mapContainer = document.getElementById('map');
     const mapFullScreenBtn = document.getElementById('mapFullScreen');
