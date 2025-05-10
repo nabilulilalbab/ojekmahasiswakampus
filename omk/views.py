@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Order, Voucher, Event, BannerEvent
 from .forms import OrderForm, VoucherForm
+from django.conf import settings
 
 class HomeView(TemplateView):
     template_name = 'omk/home.html'
@@ -56,14 +57,15 @@ class HomeView(TemplateView):
         return context
 
 class OrderCreateView(CreateView):
+    template_name = 'omk/order_form.html'
     model = Order
     form_class = OrderForm
-    template_name = 'omk/order_form.html'
     success_url = reverse_lazy('omk:order_success')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['voucher_form'] = VoucherForm()
+        context['OPENROUTE_API_KEY'] = settings.OPENROUTE_API_KEY
+        print("Template context:", context)  # Debug print
         return context
 
     def get_current_event(self):
@@ -164,3 +166,10 @@ class CheckVoucherView(FormView):
             'valid': False,
             'message': 'Form tidak valid'
         })
+
+def order_form(request):
+    context = {
+        'form': form,
+        'OPENROUTE_API_KEY': settings.OPENROUTE_API_KEY,
+    }
+    return render(request, 'omk/order_form.html', context)
